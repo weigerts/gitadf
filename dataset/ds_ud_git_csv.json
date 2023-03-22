@@ -1,0 +1,33 @@
+{
+	"name": "ds_ud_git_csv",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_ud_destination",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"pfilename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().pfilename",
+					"type": "Expression"
+				},
+				"folderPath": "csv",
+				"container": "udemyadf"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

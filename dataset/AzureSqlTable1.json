@@ -1,0 +1,98 @@
+{
+	"name": "AzureSqlTable1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_dbsup01",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "data_documento",
+				"type": "date"
+			},
+			{
+				"name": "data_venda",
+				"type": "date"
+			},
+			{
+				"name": "direcao_movimento",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "documento_estornado",
+				"type": "nvarchar"
+			},
+			{
+				"name": "moeda",
+				"type": "nvarchar"
+			},
+			{
+				"name": "nota_fiscal",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "numero_documento",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "preco_interno",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "quantidade_ordem",
+				"type": "nvarchar"
+			},
+			{
+				"name": "serie_fiscal",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "sku_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "tipo_documento",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "tipo_pessoa",
+				"type": "nvarchar"
+			},
+			{
+				"name": "valor_bruto",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "valor_liquido",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "venda_online",
+				"type": "nvarchar"
+			},
+			{
+				"name": "cnpj",
+				"type": "varchar"
+			},
+			{
+				"name": "ean_principal",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "sup01",
+			"table": "movimento"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

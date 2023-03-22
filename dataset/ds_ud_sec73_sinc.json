@@ -1,0 +1,23 @@
+{
+	"name": "ds_ud_sec73_sinc",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_ud_processed",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "sec73",
+				"container": "udemyadf"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

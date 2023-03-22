@@ -1,0 +1,214 @@
+{
+	"name": "SelloutMensal_stock_sales",
+	"properties": {
+		"description": "This task uploads the data from ShoppingBrasilDiario from D-1. ",
+		"activities": [
+			{
+				"name": "sellout_stocksales",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "."
+					},
+					{
+						"name": "Destination",
+						"value": "/INPUT/ShoppingBrasilDiario.csv"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "\tselect --top(100000)\n\t\t'competitors_sellout_monthly' as Origin,\n\t\tcast(Periodo as date) as Date,\n\t\tRegional as Regiao,\n\t\tBandeira as Seller,\n\t\tSupervisor as '5NO',\n\t\tnull as MeioDeDivulgacao,\n\t\tMarca as Brand,\n\t\tGrupoProduto as Product_Group,\n\t\tModelo as Product,\n\t\tnull as Product_LCM,\n\t\tnull as Corte_LCM,\n\t\tnull as Tracking_Model_LCM,\n\t\t'Stock' as KPI, \n\t\tPosicaoEstoque as Value\n\tfrom DatalabBrasilDW.dbo.SelloutMensal_EluxInfo smei \n\twhere 1=1\n\t\tand Periodo >= dateadd(month,-24,current_timestamp)\n\t--order by 2 desc\n\t\tand PosicaoEstoque <> ''\nunion all\n\tselect --top(10)\n\t\t'competitors_sellout_monthly' as Origin,\n\t\tcast(Periodo as date) as Date,\n\t\tRegional as Regiao,\n\t\tBandeira as Seller,\n\t\tSupervisor as '5NO',\n\t\tnull as MeioDeDivulgacao,\n\t\tMarca as Brand,\n\t\tGrupoProduto as Product_Group,\n\t\tModelo as Product,\n\t\tnull as Product_LCM,\n\t\tnull as Corte_LCM,\n\t\tnull as Tracking_Model_LCM,\n\t\t'Sales Units' as KPI, \n\t\tTotalVenda as Value\n\tfrom DatalabBrasilDW.dbo.SelloutMensal_EluxInfo smei \n\twhere 1=1\n\t\tand Periodo >= dateadd(month,-24,current_timestamp)\n\torder by 2 desc",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "SftpWriteSettings",
+							"operationTimeout": "01:00:00",
+							"useTempFileRename": true
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Origin",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 1
+								}
+							},
+							{
+								"source": {
+									"name": "Date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 2
+								}
+							},
+							{
+								"source": {
+									"name": "Regiao",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 3
+								}
+							},
+							{
+								"source": {
+									"name": "Seller",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 4
+								}
+							},
+							{
+								"source": {
+									"name": "5NO",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 5
+								}
+							},
+							{
+								"source": {
+									"name": "MeioDeDivulgacao",
+									"type": "Int32"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 6
+								}
+							},
+							{
+								"source": {
+									"name": "Brand",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 7
+								}
+							},
+							{
+								"source": {
+									"name": "Product_Group",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 8
+								}
+							},
+							{
+								"source": {
+									"name": "Product",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 9
+								}
+							},
+							{
+								"source": {
+									"name": "Product_LCM",
+									"type": "Int32"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 10
+								}
+							},
+							{
+								"source": {
+									"name": "Corte_LCM",
+									"type": "Int32"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 11
+								}
+							},
+							{
+								"source": {
+									"name": "Tracking_Model_LCM",
+									"type": "Int32"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 12
+								}
+							},
+							{
+								"source": {
+									"name": "KPI",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 13
+								}
+							},
+							{
+								"source": {
+									"name": "Value",
+									"type": "Int32"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 14
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DatalabBrasil",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Destination_sellout_stocksales",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "Dev_Zilliant_Competitors"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-02-21T14:04:48Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

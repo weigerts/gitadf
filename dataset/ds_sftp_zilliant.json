@@ -1,0 +1,23 @@
+{
+	"name": "ds_sftp_zilliant",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Sftp Zilliant DEV",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "SftpLocation",
+				"fileName": "competitors_gfkbrazil_monthly.csv",
+				"folderPath": "/INPUT"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

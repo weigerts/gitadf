@@ -1,0 +1,28 @@
+{
+	"name": "ds_sup03",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_supplierinfo_03",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"param_cnpj": {
+					"value": "@dataset().cnpj",
+					"type": "Expression"
+				},
+				"param_data": {
+					"value": "@formatDateTime(subtractFromTime(utcNow(),1,'Day'),'yyyy-MM-dd')",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"cnpj": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

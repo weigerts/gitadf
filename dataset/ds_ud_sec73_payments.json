@@ -1,0 +1,62 @@
+{
+	"name": "ds_ud_sec73_payments",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_ud_source",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Payments.csv",
+				"folderPath": "sec73",
+				"container": "udemyadf"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "order_id",
+				"type": "String"
+			},
+			{
+				"name": "payment_id",
+				"type": "String"
+			},
+			{
+				"name": "type",
+				"type": "String"
+			},
+			{
+				"name": "descriptions",
+				"type": "String"
+			},
+			{
+				"name": "pDate",
+				"type": "String"
+			},
+			{
+				"name": "Status",
+				"type": "String"
+			},
+			{
+				"name": "Details",
+				"type": "String"
+			},
+			{
+				"name": "Total_Invoice",
+				"type": "String"
+			},
+			{
+				"name": "Due_Amount",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,63 @@
+{
+	"name": "ppl_sipolatti",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get cnpj",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "ppl_sup01",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "get movimento",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Get cnpj",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "ppl_sup02",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "get estoque",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Get cnpj",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "ppl_supestoque",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-01-24T17:00:29Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

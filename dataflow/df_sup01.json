@@ -1,0 +1,98 @@
+{
+	"name": "df_sup01",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_sup01",
+						"type": "DatasetReference"
+					},
+					"name": "srcapisup1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "filiais",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "flatten1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          body as (data as (bairro as string, cep as string, cidade as string, cnpj as long, codigo as short, complemento as string, {domicílio_fiscal} as string, logradouro as string, numero as string, razao_social as string, uf as string)[], success as boolean, totalRecords as short),",
+				"          headers as [string,string]",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     httpMethod: 'GET',",
+				"     timeout: 30,",
+				"     requestInterval: 0,",
+				"     paginationRules: ['supportRFC5988' -> 'true'],",
+				"     responseFormat: ['type' -> 'json', 'documentForm' -> 'arrayOfDocuments']) ~> srcapisup1",
+				"srcapisup1 foldDown(unroll(body.data),",
+				"     mapColumn(",
+				"          bairro = body.data.bairro,",
+				"          cep = body.data.cep,",
+				"          cidade = body.data.cidade,",
+				"          cnpj = body.data.cnpj,",
+				"          codigo = body.data.codigo,",
+				"          complemento = body.data.complemento,",
+				"          {domicílio_fiscal} = body.data.{domicílio_fiscal},",
+				"          logradouro = body.data.logradouro,",
+				"          numero = body.data.numero,",
+				"          razao_social = body.data.razao_social,",
+				"          uf = body.data.uf",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten1",
+				"flatten1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          codigo as integer,",
+				"          cnpj as string,",
+				"          bairro as string,",
+				"          cep as string,",
+				"          cidade as string,",
+				"          complemento as string,",
+				"          domicilio_fiscal as string,",
+				"          logradouro as string,",
+				"          numero as string,",
+				"          razao_social as string,",
+				"          uf as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     preSQLs:['truncate table sup01.filiais'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          bairro,",
+				"          cep,",
+				"          cidade,",
+				"          cnpj,",
+				"          codigo,",
+				"          complemento,",
+				"          {domicílio_fiscal},",
+				"          logradouro,",
+				"          numero,",
+				"          razao_social,",
+				"          uf",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

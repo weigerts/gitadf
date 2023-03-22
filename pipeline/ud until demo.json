@@ -1,0 +1,37 @@
+{
+	"name": "ud until demo",
+	"properties": {
+		"activities": [
+			{
+				"name": "Until time",
+				"type": "Until",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@greater(utcnow(),'3/3/2023, 5:44:20 PM')\n",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Wait1",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 30
+							}
+						}
+					],
+					"timeout": "0.12:00:00"
+				}
+			}
+		],
+		"folder": {
+			"name": "Udemy"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-03-03T17:42:06Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

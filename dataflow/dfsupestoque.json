@@ -1,0 +1,95 @@
+{
+	"name": "dfsupestoque",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_sup03",
+						"type": "DatasetReference"
+					},
+					"name": "srcsupestoque"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable_sup03",
+						"type": "DatasetReference"
+					},
+					"name": "sinkestoque"
+				}
+			],
+			"transformations": [
+				{
+					"name": "flatten1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "alterRow1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     dfpcnpj as string",
+				"}",
+				"source(output(",
+				"          body as (continuationToken as string, data as (data_movimento as date, deposito as short, ean_principal as long, parceiro as short, quantidade as short, sku_id as string)[], success as boolean, totalRecords as short),",
+				"          headers as [string,string]",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     httpMethod: 'GET',",
+				"     timeout: 30,",
+				"     requestInterval: 0,",
+				"     paginationRules: ['supportRFC5988' -> 'true'],",
+				"     responseFormat: ['type' -> 'json', 'documentForm' -> 'arrayOfDocuments']) ~> srcsupestoque",
+				"srcsupestoque foldDown(unroll(body.data),",
+				"     mapColumn(",
+				"          data_movimento = body.data.data_movimento,",
+				"          deposito = body.data.deposito,",
+				"          ean_principal = body.data.ean_principal,",
+				"          parceiro = body.data.parceiro,",
+				"          quantidade = body.data.quantidade,",
+				"          sku_id = body.data.sku_id",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten1",
+				"flatten1 derive(cnpj = $dfpcnpj) ~> derivedColumn1",
+				"derivedColumn1 alterRow(upsertIf(true())) ~> alterRow1",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          cnpj as string,",
+				"          ean_principal as string,",
+				"          deposito as string,",
+				"          parceiro as integer,",
+				"          quantidade as integer,",
+				"          sku_id as string,",
+				"          data_movimento as date",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['cnpj','ean_principal','deposito'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          cnpj,",
+				"          ean_principal,",
+				"          deposito,",
+				"          parceiro,",
+				"          quantidade,",
+				"          sku_id,",
+				"          data_movimento",
+				"     )) ~> sinkestoque"
+			]
+		}
+	}
+}

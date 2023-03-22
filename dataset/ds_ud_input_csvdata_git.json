@@ -1,0 +1,31 @@
+{
+	"name": "ds_ud_input_csvdata_git",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_http_github_step2c",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"prelativegiturl": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": {
+					"value": "@dataset().prelativegiturl",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

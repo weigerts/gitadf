@@ -1,0 +1,401 @@
+{
+	"name": "advworkswwimergedf",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AdventureWorksProducts",
+						"type": "DatasetReference"
+					},
+					"name": "advworksdbsource"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_wwimportersstockitems",
+						"type": "DatasetReference"
+					},
+					"name": "wwimportsdbsource"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_wwimportersstockitems",
+						"type": "DatasetReference"
+					},
+					"name": "wwimporterscolorsource"
+				},
+				{
+					"dataset": {
+						"referenceName": "AdventureWorksProducts",
+						"type": "DatasetReference"
+					},
+					"name": "advworkscheckmodel"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_wwimportersstockitems",
+						"type": "DatasetReference"
+					},
+					"name": "wwimportersgetinvoiceevents"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_mergedbproducts",
+						"type": "DatasetReference"
+					},
+					"name": "MergeDBProductsSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_mergedbclothes",
+						"type": "DatasetReference"
+					},
+					"name": "mergedbclothesink"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_advworksblob",
+						"type": "DatasetReference"
+					},
+					"name": "advworksblobsink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "sortbyname"
+				},
+				{
+					"name": "filterdiscontinued"
+				},
+				{
+					"name": "derivedfinalcostandproducttype"
+				},
+				{
+					"name": "derivedproducttype"
+				},
+				{
+					"name": "selectadvworkscolumns"
+				},
+				{
+					"name": "selectwwimporterscolumns"
+				},
+				{
+					"name": "wwimporterscolorslookup"
+				},
+				{
+					"name": "advworkssplitclothesfromproducts"
+				},
+				{
+					"name": "wwimporterssplitclothesfromproducts"
+				},
+				{
+					"name": "checkrepeatedclothes"
+				},
+				{
+					"name": "unionallclothes"
+				},
+				{
+					"name": "unionallproducts"
+				},
+				{
+					"name": "joinmodel"
+				},
+				{
+					"name": "aggregatebyproductmodelname"
+				},
+				{
+					"name": "rankbyavgprice"
+				},
+				{
+					"name": "addpkclothes"
+				},
+				{
+					"name": "addpkproducts"
+				},
+				{
+					"name": "AlterRow1"
+				},
+				{
+					"name": "deriveprofitability"
+				},
+				{
+					"name": "windowclothes"
+				},
+				{
+					"name": "parsejsoncolumn"
+				},
+				{
+					"name": "flattenevents"
+				},
+				{
+					"name": "parsejsonevents"
+				},
+				{
+					"name": "pivoteventdates"
+				},
+				{
+					"name": "derivecomplexsubcolumns"
+				},
+				{
+					"name": "MapDriftedeventdates",
+					"description": "Creates an explicit mapping for each drifted column"
+				},
+				{
+					"name": "unpivoteventdates"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ProductID as integer,",
+				"          Name as string,",
+				"          ProductNumber as string,",
+				"          MakeFlag as boolean,",
+				"          FinishedGoodsFlag as boolean,",
+				"          Color as string,",
+				"          SafetyStockLevel as integer,",
+				"          ReorderPoint as integer,",
+				"          StandardCost as decimal(19,4),",
+				"          ListPrice as decimal(19,4),",
+				"          Size as string,",
+				"          SizeUnitMeasureCode as string,",
+				"          WeightUnitMeasureCode as string,",
+				"          Weight as decimal(8,2),",
+				"          DaysToManufacture as integer,",
+				"          ProductLine as string,",
+				"          Class as string,",
+				"          Style as string,",
+				"          ProductSubcategoryID as integer,",
+				"          ProductModelID as integer,",
+				"          SellStartDate as timestamp,",
+				"          SellEndDate as timestamp,",
+				"          DiscontinuedDate as timestamp,",
+				"          rowguid as string,",
+				"          ModifiedDate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table',",
+				"     partitionBy('roundRobin', 2)) ~> advworksdbsource",
+				"source(output(",
+				"          StockItemID as integer,",
+				"          StockItemName as string,",
+				"          SupplierID as integer,",
+				"          ColorID as integer,",
+				"          UnitPackageID as integer,",
+				"          OuterPackageID as integer,",
+				"          Brand as string,",
+				"          Size as string,",
+				"          LeadTimeDays as integer,",
+				"          QuantityPerOuter as integer,",
+				"          IsChillerStock as boolean,",
+				"          Barcode as string,",
+				"          TaxRate as decimal(18,3),",
+				"          UnitPrice as decimal(18,2),",
+				"          RecommendedRetailPrice as decimal(18,2),",
+				"          TypicalWeightPerUnit as decimal(18,3),",
+				"          MarketingComments as string,",
+				"          InternalComments as string,",
+				"          Photo as binary,",
+				"          CustomFields as string,",
+				"          Tags as string,",
+				"          SearchDetails as string,",
+				"          LastEditedBy as integer,",
+				"          ValidFrom as timestamp,",
+				"          ValidTo as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> wwimportsdbsource",
+				"source(output(",
+				"          ColorID as integer,",
+				"          Color as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'select ColorID,ColorName as Color from Warehouse.Colors',",
+				"     format: 'query') ~> wwimporterscolorsource",
+				"source(output(",
+				"          ProductModelID as integer,",
+				"          ProductModelName as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'select ProductModelID, Name as ProductModelName from Production.ProductModel',",
+				"     format: 'query') ~> advworkscheckmodel",
+				"source(output(",
+				"          InvoiceID as integer,",
+				"          ReturnedDeliveryData as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'select InvoiceID, [ReturnedDeliveryData] from [Sales].[Invoices]',",
+				"     format: 'query') ~> wwimportersgetinvoiceevents",
+				"wwimportsdbsource sort(asc(StockItemName, true),",
+				"     caseInsensitive: true) ~> sortbyname",
+				"advworksdbsource filter(isNull(SellEndDate)) ~> filterdiscontinued",
+				"sortbyname derive(cost = UnitPrice*(1+(TaxRate/100)),",
+				"          itemType = case(\r",
+				"    in(['S','M','L','3XL','3XS','4XL','5XL','6XL','7XL','XS','XXS','XL','XXL'],Size)\r",
+				"    ,'Clothing','Product'\r",
+				")) ~> derivedfinalcostandproducttype",
+				"selectadvworkscolumns derive(itemType = case(\r",
+				"    in(['S','M','L','XL'],Size)\r",
+				"    ,'Clothing','Product'\r",
+				")) ~> derivedproducttype",
+				"joinmodel select(mapColumn(",
+				"          Name,",
+				"          Color,",
+				"          Cost = StandardCost,",
+				"          RetailPrice = ListPrice,",
+				"          Size",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectadvworkscolumns",
+				"wwimporterscolorslookup select(mapColumn(",
+				"          Name = StockItemName,",
+				"          ColorID = Color,",
+				"          cost,",
+				"          RetailPrice = RecommendedRetailPrice,",
+				"          Size,",
+				"          itemType",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectwwimporterscolumns",
+				"derivedfinalcostandproducttype, wwimporterscolorsource lookup(wwimportsdbsource@ColorID == wwimporterscolorsource@ColorID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> wwimporterscolorslookup",
+				"derivedproducttype split(itemType== 'Product',",
+				"     disjoint: false) ~> advworkssplitclothesfromproducts@(advworksproducts, advworksclothing)",
+				"selectwwimporterscolumns split(itemType == 'Product',",
+				"     disjoint: false) ~> wwimporterssplitclothesfromproducts@(wwimportersproducts, wwimportersclothing)",
+				"advworkssplitclothesfromproducts@advworksclothing, wwimporterssplitclothesfromproducts@wwimportersproducts exists(advworkssplitclothesfromproducts@advworksclothing@Name == wwimporterssplitclothesfromproducts@wwimportersproducts@Name,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> checkrepeatedclothes",
+				"checkrepeatedclothes, wwimporterssplitclothesfromproducts@wwimportersclothing union(byName: true)~> unionallclothes",
+				"wwimporterssplitclothesfromproducts@wwimportersproducts, advworkssplitclothesfromproducts@advworksproducts union(byName: true)~> unionallproducts",
+				"filterdiscontinued, advworkscheckmodel join(advworksdbsource@ProductModelID == advworkscheckmodel@ProductModelID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinmodel",
+				"joinmodel aggregate(groupBy(ProductModelName),",
+				"     AverageCost = avg(StandardCost)) ~> aggregatebyproductmodelname",
+				"aggregatebyproductmodelname rank(desc(AverageCost, true),",
+				"     caseInsensitive: true,",
+				"     output(Rank as long),",
+				"     dense: true) ~> rankbyavgprice",
+				"windowclothes keyGenerate(output(ClothingID as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> addpkclothes",
+				"unionallproducts keyGenerate(output(ProductID as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> addpkproducts",
+				"addpkclothes alterRow(upsertIf(true())) ~> AlterRow1",
+				"unionallclothes derive(Profitability = iif(unionallclothes@Cost==0, toDecimal(0), RetailPrice/unionallclothes@Cost)) ~> deriveprofitability",
+				"deriveprofitability window(over(Size),",
+				"     desc(Profitability, true),",
+				"     Rank = denseRank()) ~> windowclothes",
+				"wwimportersgetinvoiceevents parse(JsonData = ReturnedDeliveryData ? (ReceivedBy as string,",
+				"          DeliveredWhen as date,",
+				"          Events as string[]),",
+				"     format: 'json',",
+				"     documentForm: 'singleDocument') ~> parsejsoncolumn",
+				"parsejsoncolumn foldDown(unroll(JsonData.Events),",
+				"     mapColumn(",
+				"          InvoiceID,",
+				"          ReceivedBy = JsonData.ReceivedBy,",
+				"          DeliveredWhen = JsonData.DeliveredWhen,",
+				"          Events = JsonData.Events",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flattenevents",
+				"flattenevents parse(EventDetails = Events ? (Event as string,",
+				"          EvenTime as date,",
+				"          ConNote as string),",
+				"     format: 'json',",
+				"     documentForm: 'singleDocument') ~> parsejsonevents",
+				"derivecomplexsubcolumns pivot(groupBy(InvoiceID,",
+				"          ReceivedBy,",
+				"          DeliveredWhen,",
+				"          ComNoteCode),",
+				"     pivotBy(EventName),",
+				"     {} = first(EventTime),",
+				"     columnNaming: '$N$V',",
+				"     lateral: true) ~> pivoteventdates",
+				"parsejsonevents derive(EventName = EventDetails.Event,",
+				"          EventTime = EventDetails.EvenTime,",
+				"          ComNoteCode = EventDetails.ConNote) ~> derivecomplexsubcolumns",
+				"pivoteventdates derive(DeliveryAttempt = toDate(byName('DeliveryAttempt')),",
+				"          {Ready for collection} = toDate(byName('Ready for collection'))) ~> MapDriftedeventdates",
+				"MapDriftedeventdates unpivot(output(",
+				"          DeliveryEvent as string,",
+				"          DeliveredWhen as date,",
+				"          DeliveryAttempt as date,",
+				"          {Ready for collection} as date",
+				"     ),",
+				"     ungroupBy(InvoiceID,",
+				"          ReceivedBy,",
+				"          ComNoteCode),",
+				"     lateral: true,",
+				"     ignoreNullPivots: false) ~> unpivoteventdates",
+				"addpkproducts sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     recreate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          Name,",
+				"          ColorID,",
+				"          cost = unionallproducts@cost,",
+				"          RetailPrice,",
+				"          Size,",
+				"          itemType,",
+				"          Color",
+				"     )) ~> MergeDBProductsSink",
+				"AlterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['Name'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          Name,",
+				"          Color,",
+				"          Cost = unionallclothes@Cost,",
+				"          RetailPrice,",
+				"          Size,",
+				"          itemType,",
+				"          ColorID",
+				"     )) ~> mergedbclothesink",
+				"rankbyavgprice sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['RankProductModelByCost.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> advworksblobsink"
+			]
+		}
+	}
+}

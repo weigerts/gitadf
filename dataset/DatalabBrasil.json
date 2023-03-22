@@ -1,0 +1,13 @@
+{
+	"name": "DatalabBrasil",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_datalab_brws0361",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

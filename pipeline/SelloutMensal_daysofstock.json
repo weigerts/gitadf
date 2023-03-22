@@ -1,0 +1,248 @@
+{
+	"name": "SelloutMensal_daysofstock",
+	"properties": {
+		"description": "calculates days of stock per customer per product",
+		"activities": [
+			{
+				"name": "sellout_daysofstock",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "."
+					},
+					{
+						"name": "Destination",
+						"value": "/INPUT/ShoppingBrasilDiario.csv"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "with\n\ttabela as (\n\t\tselect \n\t\t'competitors_sellout_monthly' as Origin,\n\t\tcast(Periodo as date) as Date,\n\t\tRegional as Regiao,\n\t\tSupervisor + Modelo as chave,\n\t\tBandeira as Seller,\n\t\t--null as MeioDeDivulgacao,\n\t\tMarca as Brand,\n\t\tGrupoProduto as Product_Group,\n\t\tModelo as Product,\n\t\t'Days of Stock' as KPI, \n\t\tTotalVenda as Value,\n\t\tPosicaoEstoque\n\t\tfrom DatalabBrasil.dbo.SelloutMensal_EluxInfo smei\n\t\twhere\n\t\t\tisnull(TotalVenda, 0) > 0\n\t\t\tand isnull(PosicaoEstoque, 0) >= 0 \n\t\t\tand Periodo between dateadd(month, -2, current_timestamp) and dateadd(month, 1, current_timestamp)\n\t\t\t--and Periodo >= dateadd(month, -2, current_timestamp)\n\t),\n\trank as (\n\t\tselect \n\t\t\trank () over (partition by Chave order by Date asc) as ranking,\n\t\t\tDate,\n\t\t\tchave,\n\t\t\tValue,\n\t\t\tPosicaoEstoque\n\t\tfrom tabela\n\t)\n\tselect \n\t\ttabela.Origin,\n\t\ttabela.Date,\n\t\ttabela.Regiao,\n\t\ttabela.Seller,\n\t\tnull as '5NO',\n\t\tnull as MeioDeDivulgacao,\n\t\ttabela.Brand,\n\t\ttabela.Product_Group,\n\t\ttabela.Product,\n\t\tnull as Product_LCM,\n\t\tnull as Corte_LCM,\n\t\tnull as Tracking_Model_LCM,\n\t\ttabela.KPI, \n\t\t--tabela.Value,\n\t\t--case when coalesce (r.posicaoestoque, 0) = 0 and coalesce(r2.posicaoestoque, 0) > 0 then 1 else 0 end as flag,\n\t\tcast((r2.posicaoestoque / r.value) as float) as Value \n\tfrom rank r\n\tleft join tabela on tabela.chave = r.chave\n\tleft join rank r2 on r.chave = r2.chave and r.ranking = r2.ranking + 1\n--\tleft join competitors on r2.chave = competitors.chave and r2.Periodo = competitors.Date\n\twhere \n\t\tcase when coalesce (r.posicaoestoque, 0) = 0 and coalesce(r2.posicaoestoque, 0) > 0 then 1 else 0 end = 1",
+						"queryTimeout": "00:30:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "SftpWriteSettings",
+							"operationTimeout": "01:00:00",
+							"useTempFileRename": true
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Origin",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"type": "String",
+									"physicalType": "String",
+									"ordinal": 1
+								}
+							},
+							{
+								"source": {
+									"name": "Date",
+									"type": "DateTime",
+									"physicalType": "date"
+								},
+								"sink": {
+									"type": "String",
+									"physicalType": "String",
+									"ordinal": 2
+								}
+							},
+							{
+								"source": {
+									"name": "Regiao",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"type": "String",
+									"physicalType": "String",
+									"ordinal": 3
+								}
+							},
+							{
+								"source": {
+									"name": "Seller",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"type": "String",
+									"physicalType": "String",
+									"ordinal": 4
+								}
+							},
+							{
+								"source": {
+									"name": "5NO",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"type": "String",
+									"physicalType": "String",
+									"ordinal": 5
+								}
+							},
+							{
+								"source": {
+									"name": "MeioDeDivulgacao",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"type": "String",
+									"physicalType": "String",
+									"ordinal": 6
+								}
+							},
+							{
+								"source": {
+									"name": "Brand",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"type": "String",
+									"physicalType": "String",
+									"ordinal": 7
+								}
+							},
+							{
+								"source": {
+									"name": "Product_Group",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"type": "String",
+									"physicalType": "String",
+									"ordinal": 8
+								}
+							},
+							{
+								"source": {
+									"name": "Product",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"type": "String",
+									"physicalType": "String",
+									"ordinal": 9
+								}
+							},
+							{
+								"source": {
+									"name": "Product_LCM",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"type": "String",
+									"physicalType": "String",
+									"ordinal": 10
+								}
+							},
+							{
+								"source": {
+									"name": "Corte_LCM",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"type": "String",
+									"physicalType": "String",
+									"ordinal": 11
+								}
+							},
+							{
+								"source": {
+									"name": "Tracking_Model_LCM",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"type": "String",
+									"physicalType": "String",
+									"ordinal": 12
+								}
+							},
+							{
+								"source": {
+									"name": "KPI",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"type": "String",
+									"physicalType": "String",
+									"ordinal": 13
+								}
+							},
+							{
+								"source": {
+									"name": "Value",
+									"type": "Double",
+									"physicalType": "float"
+								},
+								"sink": {
+									"type": "String",
+									"physicalType": "String",
+									"ordinal": 14
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DatalabBrasil",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Destination_sellout_stocksales",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "Dev_Zilliant_Competitors"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-02-21T14:06:20Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

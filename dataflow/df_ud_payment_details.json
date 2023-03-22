@@ -1,0 +1,178 @@
+{
+	"name": "df_ud_payment_details",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_ud_sc73",
+						"type": "DatasetReference"
+					},
+					"name": "sourceCustomers"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_ud_sec73_payments",
+						"type": "DatasetReference"
+					},
+					"name": "sourcePayments"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_ud_sec73_orders",
+						"type": "DatasetReference"
+					},
+					"name": "sourceOrders"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_ud_sec73_sinc",
+						"type": "DatasetReference"
+					},
+					"name": "sinkPaymentDetails"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filterOnlyNonErrorData"
+				},
+				{
+					"name": "filterCustomerAge20to70"
+				},
+				{
+					"name": "selectRelevantCustomerFields"
+				},
+				{
+					"name": "selectRelevantPaymentFields"
+				},
+				{
+					"name": "selectRelevantColumnsOrders"
+				},
+				{
+					"name": "joinCustomerOrder"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "selectPaymentDetailsRequiredFIelds"
+				},
+				{
+					"name": "pivotDueAmount"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     pminage as integer,",
+				"     pmaxage as integer",
+				"}",
+				"source(output(",
+				"          customer_id as string,",
+				"          Customerslastname as string,",
+				"          Customersfirstname as string,",
+				"          CustomersCountry as string,",
+				"          Customersage as short,",
+				"          Customersgender as string,",
+				"          Customersemail as string,",
+				"          Customersprofession as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceCustomers",
+				"source(output(",
+				"          order_id as string,",
+				"          payment_id as string,",
+				"          type as string,",
+				"          descriptions as string,",
+				"          pDate as date 'dd/MM/yyyy',",
+				"          Status as string,",
+				"          Details as string,",
+				"          Total_Invoice as short,",
+				"          Due_Amount as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourcePayments",
+				"source(output(",
+				"          order_id as string,",
+				"          customer_id as string,",
+				"          Store_id as string,",
+				"          Date as date 'dd/MM/yyyy'",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceOrders",
+				"sourcePayments filter(Status != \"error\" && (not(equals(Status, 'refunded')))) ~> filterOnlyNonErrorData",
+				"sourceCustomers filter(Customersage>=$pminage && Customersage<=$pmaxage) ~> filterCustomerAge20to70",
+				"filterCustomerAge20to70 select(mapColumn(",
+				"          customer_id,",
+				"          Customer_First_Name = Customersfirstname,",
+				"          Customer_Last_Name = Customerslastname,",
+				"          Customer_Country = CustomersCountry,",
+				"          Customer_Age = Customersage",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectRelevantCustomerFields",
+				"filterOnlyNonErrorData select(mapColumn(",
+				"          payment_id,",
+				"          order_id,",
+				"          Status,",
+				"          Due_Amount,",
+				"          Total_Invoice",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectRelevantPaymentFields",
+				"sourceOrders select(mapColumn(",
+				"          order_id,",
+				"          customer_id,",
+				"          Date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectRelevantColumnsOrders",
+				"selectRelevantCustomerFields, selectRelevantColumnsOrders join(selectRelevantCustomerFields@customer_id == selectRelevantColumnsOrders@customer_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinCustomerOrder",
+				"joinCustomerOrder, selectRelevantPaymentFields join(selectRelevantColumnsOrders@order_id == selectRelevantPaymentFields@order_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 select(mapColumn(",
+				"          customer_id = selectRelevantCustomerFields@customer_id,",
+				"          Date,",
+				"          Customer_First_Name,",
+				"          Customer_Last_Name,",
+				"          Customer_Country,",
+				"          Customer_Age,",
+				"          Status,",
+				"          Due_Amount,",
+				"          Total_Invoice",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectPaymentDetailsRequiredFIelds",
+				"selectPaymentDetailsRequiredFIelds pivot(groupBy(customer_id,",
+				"          Date,",
+				"          Customer_First_Name,",
+				"          Customer_Last_Name,",
+				"          Customer_Country,",
+				"          Customer_Age,",
+				"          Total_Invoice),",
+				"     pivotBy(Status, ['received', 'not received']),",
+				"     Due_amount = sum(Due_Amount),",
+				"     columnNaming: '$N$V',",
+				"     lateral: true) ~> pivotDueAmount",
+				"pivotDueAmount sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:[(concat(\"PaymentDetails\",toString($pminage),toString($pmaxage),\".csv\"))],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkPaymentDetails"
+			]
+		}
+	}
+}

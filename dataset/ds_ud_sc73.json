@@ -1,0 +1,58 @@
+{
+	"name": "ds_ud_sc73",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_ud_source",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Customers.csv",
+				"folderPath": "sec73",
+				"container": "udemyadf"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "customer_id",
+				"type": "String"
+			},
+			{
+				"name": "Customerslastname",
+				"type": "String"
+			},
+			{
+				"name": "Customersfirstname",
+				"type": "String"
+			},
+			{
+				"name": "CustomersCountry",
+				"type": "String"
+			},
+			{
+				"name": "Customersage",
+				"type": "String"
+			},
+			{
+				"name": "Customersgender",
+				"type": "String"
+			},
+			{
+				"name": "Customersemail",
+				"type": "String"
+			},
+			{
+				"name": "Customersprofession",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

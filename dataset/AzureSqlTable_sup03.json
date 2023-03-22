@@ -1,0 +1,48 @@
+{
+	"name": "AzureSqlTable_sup03",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase_ls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "cnpj",
+				"type": "varchar"
+			},
+			{
+				"name": "ean_principal",
+				"type": "varchar"
+			},
+			{
+				"name": "deposito",
+				"type": "varchar"
+			},
+			{
+				"name": "parceiro",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "quantidade",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "sku_id",
+				"type": "varchar"
+			},
+			{
+				"name": "data_movimento",
+				"type": "date"
+			}
+		],
+		"typeProperties": {
+			"schema": "sup01",
+			"table": "estoque"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,225 @@
+{
+	"name": "ppl_shoppingbrasilmensal",
+	"properties": {
+		"description": "Monthly data refresh for ShoppingBrasilMensal and SelloutMensal tables.",
+		"activities": [
+			{
+				"name": "ShoppingBrasilMensal",
+				"description": "SQL query that brings the last 24 months of ShoppingBrasilMensal data to Zilliant SFTP.",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "."
+					},
+					{
+						"name": "Destination",
+						"value": "/INPUT/competitors_shoppingbrasilmensal.csv"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "with rn as(\nselect \n\t\tROW_NUMBER() OVER( PARTITION BY [Periodo], [UF], [Marca], [Categoria], [Modelo] ORDER BY [Modelo] ASC) as a,\n\t    'competitors_shoppingbrasil_monthly' as Origin,\n\t    'BR10' as Sales_Org,\n\t\tcast(Periodo as date) as Date,\t    \n\t\tUF as Region,\n\t\tLoja as Seller,\n\t\tnull as '5NO',\n\t\tVeiculo as MeioDeDivulgacao,\n\t    [Marca] as Brand,\n\t    [Categoria] as Product_Group,\n\t    Modelo  as Product,\n\t    null as Product_LCM,\n\t    null as Corte_LCM, \n\t    null as Tracking_Model_LCM, \n\t    'Sales Value BRL' as KPI,\n\t\tMenorPrecoAvista as Value\n\tfrom DatalabBrasilDW.dbo.ShoppingBrasilMensal sbm\n\twhere 1=1\n\t\tand Periodo >= dateadd(month, -3, CURRENT_TIMESTAMP)\n\t\t)\n\tselect origin, sales_org, date, region, seller, null as '5NO', meiodedivulgacao, brand, product_group, product, product_lcm, corte_lcm, tracking_model_lcm, kpi, value from rn\n\twhere rn.a = 1",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "SftpWriteSettings",
+							"operationTimeout": "01:00:00",
+							"useTempFileRename": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "origin",
+									"type": "String"
+								},
+								"sink": {
+									"name": "origin",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "sales_org",
+									"type": "String"
+								},
+								"sink": {
+									"name": "sales_org",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "date",
+									"type": "DateTime"
+								},
+								"sink": {
+									"name": "date",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "region",
+									"type": "String"
+								},
+								"sink": {
+									"name": "region",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "seller",
+									"type": "String"
+								},
+								"sink": {
+									"name": "seller",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "5NO",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "5NO",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "meiodedivulgacao",
+									"type": "String"
+								},
+								"sink": {
+									"name": "meiodedivulgacao",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "brand",
+									"type": "String"
+								},
+								"sink": {
+									"name": "brand",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "product_group",
+									"type": "String"
+								},
+								"sink": {
+									"name": "product_group",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "product",
+									"type": "String"
+								},
+								"sink": {
+									"name": "product",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "product_lcm",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "product_lcm",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "corte_lcm",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "corte_lcm",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "tracking_model_lcm",
+									"type": "Int32"
+								},
+								"sink": {
+									"name": "tracking_model_lcm",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "kpi",
+									"type": "String"
+								},
+								"sink": {
+									"name": "kpi",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "value",
+									"type": "Double"
+								},
+								"sink": {
+									"name": "value",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DatalabBrasil",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Destination_shopbrasilmensal",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "Dev_Zilliant_Competitors"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-03-16T11:39:51Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

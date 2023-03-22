@@ -1,0 +1,28 @@
+{
+	"name": "Ds_ud_azuredatalakecsv",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_ud_datalake",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@concat('Sales_in',item().year,'.csv')",
+					"type": "Expression"
+				},
+				"folderPath": "output",
+				"fileSystem": "udemyadf"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

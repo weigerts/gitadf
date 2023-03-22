@@ -1,0 +1,27 @@
+{
+	"name": "Destination_shopbrasildiario",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Sftp Zilliant DEV",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "dev_zilliant_destination"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "SftpLocation",
+				"fileName": "competitors_shoppingbrasildiario.csv",
+				"folderPath": "/INPUT"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": ""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

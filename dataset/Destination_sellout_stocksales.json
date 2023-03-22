@@ -1,0 +1,26 @@
+{
+	"name": "Destination_sellout_stocksales",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Sftp Zilliant DEV",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "dev_zilliant_destination"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "SftpLocation",
+				"fileName": "sellout_stocksales.csv",
+				"folderPath": "/INPUT"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

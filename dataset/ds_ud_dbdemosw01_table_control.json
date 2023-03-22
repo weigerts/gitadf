@@ -1,0 +1,28 @@
+{
+	"name": "ds_ud_dbdemosw01_table_control",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_ud_dbdemosw01",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "TableName",
+				"type": "varchar"
+			},
+			{
+				"name": "LastLoadDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "tblControl"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

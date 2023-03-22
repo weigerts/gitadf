@@ -1,0 +1,117 @@
+{
+	"name": "df_ud_scd_type1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_ud_dbdemosw01_tbluser",
+						"type": "DatasetReference"
+					},
+					"name": "sourcedata"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_ud_dbdemosw02",
+						"type": "DatasetReference"
+					},
+					"name": "destinationData"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_ud_dbdemosw02",
+						"type": "DatasetReference"
+					},
+					"name": "sinkData"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_ud_dbdemosw02",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "existsornot"
+				},
+				{
+					"name": "existsornot1"
+				},
+				{
+					"name": "alterRowdata"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Key as integer,",
+				"          Name as string,",
+				"          Phone as string,",
+				"          Last_m as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sourcedata",
+				"source(output(",
+				"          Key as integer,",
+				"          Name as string,",
+				"          Phone as string,",
+				"          Last_m as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> destinationData",
+				"sourcedata, destinationData exists(sourcedata@Key == destinationData@Key,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> existsornot",
+				"sourcedata, destinationData exists(sourcedata@Key == destinationData@Key,",
+				"     negate:false,",
+				"     broadcast: 'auto')~> existsornot1",
+				"existsornot1 alterRow(updateIf(true())) ~> alterRowdata",
+				"existsornot sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Key as integer,",
+				"          Name as string,",
+				"          Phone as string,",
+				"          Last_m as date",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Key,",
+				"          Name,",
+				"          Phone,",
+				"          Last_m",
+				"     )) ~> sinkData",
+				"alterRowdata sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Key as integer,",
+				"          Name as string,",
+				"          Phone as string,",
+				"          Last_m as date",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['Key'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}

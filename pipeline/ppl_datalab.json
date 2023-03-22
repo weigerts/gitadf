@@ -1,0 +1,63 @@
+{
+	"name": "ppl_datalab",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "select top(2)'SellOut_Info' as Origin,cast(Periodo as date) as Date,Regional as Regiao,Bandeira as Seller,'-' as MeioDeDivulgacao,Marca as Brand,GrupoProduto as Product_Group,Modelo as Product,'-' as Product_LCM,'-' as Corte_LCM,'-' as Tracking_Model_LCM,'Sales Units' as KPI,TotalVenda as Value from DatalabBrasilDW.dbo.SelloutMensal_EluxInfo smei where 1=1 and Periodo >= dateadd(month,-24,current_timestamp)",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_datalab",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_azuredatalake_csv",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-02-02T17:53:57Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,15 @@
+{
+	"name": "dfsw001",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned,UserAssigned",
+		"principalId": "679cc674-0453-4881-9f4f-9867ac539176",
+		"tenantId": "d2007bef-127d-4591-97ac-10d72fe28031",
+		"userAssignedIdentities": {
+			"/subscriptions/27e49bd9-fbfb-4a0e-bd36-933bf4ee5996/resourcegroups/RG-LATAM-App-01-Test-Data/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mi_adm-weigesan": {
+				"clientId": "7625dee4-b142-47be-9365-99b2314d23b0",
+				"principalId": "1641e82b-9f06-4928-8501-f6ca8b203573"
+			}
+		}
+	}
+}

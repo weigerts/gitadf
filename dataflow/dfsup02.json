@@ -1,0 +1,128 @@
+{
+	"name": "dfsup02",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_sup02",
+						"type": "DatasetReference"
+					},
+					"name": "srcsup02"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable1",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "flatten1"
+				},
+				{
+					"name": "AlterRow1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     pdatai as string,",
+				"     pdataf as string",
+				"}",
+				"source(output(",
+				"          body as (continuationToken as string, data as (cnpj as long, data_documento as date, data_venda as date, direcao_movimento as short, documento_estornado as boolean, ean_principal as long, moeda as string, nota_fiscal as integer, numero_documento as integer, preco_interno as double, quantidade_ordem as integer, serie_fiscal as short, sku_id as string, tipo_documento as short, tipo_pessoa as boolean, valor_bruto as double, valor_liquido as double, venda_online as boolean)[], success as boolean, totalRecords as short),",
+				"          headers as [string,string]",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     limit: 100,",
+				"     httpMethod: 'GET',",
+				"     timeout: 30,",
+				"     requestInterval: 0,",
+				"     paginationRules: ['supportRFC5988' -> 'true'],",
+				"     responseFormat: ['type' -> 'json', 'documentForm' -> 'arrayOfDocuments']) ~> srcsup02",
+				"srcsup02 foldDown(unroll(body.data),",
+				"     mapColumn(",
+				"          cnpj = body.data.cnpj,",
+				"          data_documento = body.data.data_documento,",
+				"          data_venda = body.data.data_venda,",
+				"          direcao_movimento = body.data.direcao_movimento,",
+				"          documento_estornado = body.data.documento_estornado,",
+				"          ean_principal = body.data.ean_principal,",
+				"          moeda = body.data.moeda,",
+				"          nota_fiscal = body.data.nota_fiscal,",
+				"          numero_documento = body.data.numero_documento,",
+				"          preco_interno = body.data.preco_interno,",
+				"          quantidade_ordem = body.data.quantidade_ordem,",
+				"          serie_fiscal = body.data.serie_fiscal,",
+				"          sku_id = body.data.sku_id,",
+				"          tipo_documento = body.data.tipo_documento,",
+				"          tipo_pessoa = body.data.tipo_pessoa,",
+				"          valor_bruto = body.data.valor_bruto,",
+				"          valor_liquido = body.data.valor_liquido,",
+				"          venda_online = body.data.venda_online,",
+				"          success = body.success,",
+				"          totalRecords = body.totalRecords",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten1",
+				"flatten1 alterRow(upsertIf(true())) ~> AlterRow1",
+				"AlterRow1 sink(allowSchemaDrift: false,",
+				"     validateSchema: false,",
+				"     input(",
+				"          data_documento as date,",
+				"          data_venda as date,",
+				"          direcao_movimento as integer,",
+				"          documento_estornado as string,",
+				"          moeda as string,",
+				"          nota_fiscal as integer,",
+				"          numero_documento as integer,",
+				"          preco_interno as double,",
+				"          quantidade_ordem as string,",
+				"          serie_fiscal as integer,",
+				"          sku_id as string,",
+				"          tipo_documento as integer,",
+				"          tipo_pessoa as string,",
+				"          valor_bruto as double,",
+				"          valor_liquido as double,",
+				"          venda_online as string,",
+				"          cnpj as string,",
+				"          ean_principal as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:true,",
+				"     upsertable:true,",
+				"     keys:['cnpj','direcao_movimento','nota_fiscal','numero_documento','serie_fiscal','ean_principal','tipo_documento'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          cnpj,",
+				"          data_documento,",
+				"          data_venda,",
+				"          direcao_movimento,",
+				"          ean_principal,",
+				"          moeda,",
+				"          nota_fiscal,",
+				"          numero_documento,",
+				"          preco_interno,",
+				"          serie_fiscal,",
+				"          sku_id,",
+				"          tipo_documento,",
+				"          valor_bruto,",
+				"          valor_liquido,",
+				"          quantidade_ordem",
+				"     ),",
+				"     preCommands: [],",
+				"     postCommands: []) ~> sink1"
+			]
+		}
+	}
+}

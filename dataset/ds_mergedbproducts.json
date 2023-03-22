@@ -1,0 +1,17 @@
+{
+	"name": "ds_mergedbproducts",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_mergedb",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Products"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,63 @@
+{
+	"name": "Azure_sup01_filiais",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_dbsup01",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "codigo",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "cnpj",
+				"type": "varchar"
+			},
+			{
+				"name": "bairro",
+				"type": "varchar"
+			},
+			{
+				"name": "cep",
+				"type": "varchar"
+			},
+			{
+				"name": "cidade",
+				"type": "varchar"
+			},
+			{
+				"name": "complemento",
+				"type": "varchar"
+			},
+			{
+				"name": "domicilio_fiscal",
+				"type": "varchar"
+			},
+			{
+				"name": "logradouro",
+				"type": "varchar"
+			},
+			{
+				"name": "numero",
+				"type": "varchar"
+			},
+			{
+				"name": "razao_social",
+				"type": "varchar"
+			},
+			{
+				"name": "uf",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "sup01",
+			"table": "filiais"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

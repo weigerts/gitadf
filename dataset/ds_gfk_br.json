@@ -1,0 +1,16 @@
+{
+	"name": "ds_gfk_br",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_gfk_br",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": ""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

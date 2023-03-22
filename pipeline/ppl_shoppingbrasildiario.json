@@ -1,0 +1,78 @@
+{
+	"name": "ppl_shoppingbrasildiario",
+	"properties": {
+		"description": "Daily data refresh for ShoppingBrasilMensal and SelloutMensal tables.",
+		"activities": [
+			{
+				"name": "ShoppingBrasilDiario",
+				"description": "SQL query that brings the last 24 months of ShoppingBrasilDIario data to Zilliant SFTP.",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "."
+					},
+					{
+						"name": "Destination",
+						"value": "/INPUT/ShoppingBrasilMensal"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "with rn as(\nselect \n\t\tROW_NUMBER() OVER( PARTITION BY [DataInicial], [UF], [Marca], [Categoria], [Modelo] ORDER BY [Modelo] ASC) as a,\n\t    'competitors_shoppingbrasil_daily' as Origin,\n\t    'BR10' as Sales_Org,\n\t\tcast([DataInicial] as date) as Date,\t    \n\t\tUF as Region,\n\t\tLoja as Seller,\n\t\tnull as '5NO',\n\t\tVeiculo as MeioDeDivulgacao,\n\t    [Marca] as Brand,\n\t    [Categoria] as Product_Group,\n\t    Modelo as Product,\n\t    null as Product_LCM,\n\t    null as Corte_LCM, \n\t    null as Tracking_Model_LCM, \n\t    'Price BRL' as KPI,\n\t    PrecoAVista as 'Value'\n\tfrom DatalabBrasilDW.dbo.ShoppingBrasilDiario sbd \n\twhere 1=1\n\t\tand [DataInicial] >= dateadd(month, -6, CURRENT_TIMESTAMP)\n\t\t)\n\tselect origin, sales_org, date, region, seller, null as '5NO', meiodedivulgacao, brand, product_group, product, product_lcm, corte_lcm, tracking_model_lcm, kpi, value from rn\n\twhere rn.a = 1",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "SftpWriteSettings",
+							"operationTimeout": "01:00:00",
+							"useTempFileRename": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DatalabBrasil",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Destination_shopbrasildiario",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "Dev_Zilliant_Competitors"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-03-16T11:35:31Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

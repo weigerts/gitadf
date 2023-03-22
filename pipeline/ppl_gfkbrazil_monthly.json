@@ -1,0 +1,251 @@
+{
+	"name": "ppl_gfkbrazil_monthly",
+	"properties": {
+		"activities": [
+			{
+				"name": "competitors_gfkbrazil_monthly",
+				"description": "queries the monthly gfk from datalab (temporarily)",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "select \n\t\t'competitors_gfkbrazil_monthly' as Origin,\n\t\t'BR10' as Sales_Org,\n\t\tcast(gm.[Periodo] as date) as Date,\n\t\tgm.Tipo as Region,\n\t\tnull as Seller,\n\t\tnull as '5NO',\n\t\tnull as MeioDeDivulgacao,\n\t\tgm.MarcaGFK as Brand,\n\t\tgm.GrupoProdutoGFK as Product_Group,\n\t\tgm.Modelo  as Product,\n\t\tdgl.Item_LCM as Product_LCM,\n\t\tdgl.Corte_LCM as Corte_LCM,\n\t\tdgl.Tracking_Model_LCM as Tracking_Model_LCM,\n\t\tgm.[KPI] as KPI,\n\t\tround(gm.[Value], 5) as Value\n\tfrom DatalabBrasilDW.dbo.GfkBrasilMensal gm\n\tleft join DatalabBrasil.dbo.DP_GFKBrasil_LCM dgl on dgl.Item_GFK = gm.Modelo \n\twhere 1=1\n\t\tand gm.KPI in ('Sales Units', 'Sales Value', 'Sales Value BRL ', 'Unw. Avg. Distribution Total', 'Wgt. Avg. Distribution Total')\n\t\tand gm.MarcaGFK not in ('<Tradebrand & Exclusive>')\n\t\tand gm.Modelo not in ('Trade Model') -- modelo especifico mas que não é aberto a marca do fabricante\n\t\t--and gm.[Pais] = 'Brazil'\n\t\tand Periodo >= dateadd(month, -6, CURRENT_TIMESTAMP)\n\t\tand gm.Tipo in ('Internet', 'Traditional', '<Grand Total>')",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "SftpWriteSettings",
+							"operationTimeout": "01:00:00",
+							"useTempFileRename": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".csv"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Origin",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Origin",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales_Org",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Sales_Org",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Date",
+									"type": "DateTime",
+									"physicalType": "date"
+								},
+								"sink": {
+									"name": "Date",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Region",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Region",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Seller",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "Seller",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "5NO",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "5NO",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "MeioDeDivulgacao",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "MeioDeDivulgacao",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Brand",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Brand",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Product_Group",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Product_Group",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Product",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Product",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Product_LCM",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Product_LCM",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Corte_LCM",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Corte_LCM",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Tracking_Model_LCM",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Tracking_Model_LCM",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "KPI",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "KPI",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Value",
+									"type": "Double",
+									"physicalType": "float"
+								},
+								"sink": {
+									"name": "Value",
+									"type": "String",
+									"physicalType": "String"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DatalabBrasil",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Destination_gfkbrazil_monthly",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "Dev_Zilliant_Competitors"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-03-17T11:37:00Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,74 @@
+{
+	"name": "ds_drjoe01",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_sqlserverdrjoe",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "data_coleta",
+				"type": "varchar"
+			},
+			{
+				"name": "loja",
+				"type": "varchar"
+			},
+			{
+				"name": "rede",
+				"type": "varchar"
+			},
+			{
+				"name": "regiao",
+				"type": "varchar"
+			},
+			{
+				"name": "regional",
+				"type": "varchar"
+			},
+			{
+				"name": "demonstrador",
+				"type": "varchar"
+			},
+			{
+				"name": "modelo",
+				"type": "varchar"
+			},
+			{
+				"name": "marca",
+				"type": "varchar"
+			},
+			{
+				"name": "categoria",
+				"type": "varchar"
+			},
+			{
+				"name": "subcategoria",
+				"type": "varchar"
+			},
+			{
+				"name": "subcategoria2",
+				"type": "varchar"
+			},
+			{
+				"name": "capacidade",
+				"type": "varchar"
+			},
+			{
+				"name": "preco_praticado",
+				"type": "varchar"
+			},
+			{
+				"name": "negocio",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "drjoe",
+			"table": "movimento"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

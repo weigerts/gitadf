@@ -1,0 +1,16 @@
+{
+	"name": "ls_brws0090_sellout",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=False;data source=BRWS0090;initial catalog=master;user id=svc-sql-datalake-dev",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJlMTMyNzE1ZS0yMTVkLTQ4ZDMtOTVkNS1kZDRjYzFhZDljODciLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "brws0360",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

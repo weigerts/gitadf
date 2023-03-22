@@ -1,0 +1,16 @@
+{
+	"name": "ls_datalab_brws0361",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=False;data source=brwcl007-02\\sqlprod2;initial catalog=datalabbrasildw;user id=svc-sql-dtlab_dw-prod",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJiZTA5MTY2YS04NGVkLTQyYmEtYjg3Yi00YTRhMGZiOGI4MTgiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "brws0361",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

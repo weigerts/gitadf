@@ -1,0 +1,16 @@
+{
+	"name": "Sales_Data",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Salesforce_Homolog",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SalesforceObject",
+		"schema": [],
+		"typeProperties": {
+			"objectApiName": "Product2"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

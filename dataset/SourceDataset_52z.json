@@ -1,0 +1,13 @@
+{
+	"name": "SourceDataset_52z",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_Sql_brwcl007_02",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

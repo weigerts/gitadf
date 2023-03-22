@@ -1,0 +1,39 @@
+{
+	"name": "ppl_token_based_rest_api_dr_joe",
+	"properties": {
+		"activities": [
+			{
+				"name": "get Token",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://accounts.zoho.com/oauth/v2/token",
+					"method": "POST",
+					"headers": {
+						"refresh_token": "1000.1b14c960f7218a4e5cd5e8a12d4bfd75.b8610a30d6281b724b01b0611053c476",
+						"client_id": "1000.6FDGAEOMQ15CT978CCOU1V0GK3BLNG",
+						"client_secret": "3a78e3f381e490262e5e685486880277a4d7540fac",
+						"grant_type": "refresh_token"
+					},
+					"body": {
+						"access_token": "1000.5bb58770bc552f67183b9547778c11fd.0bb78faff51a5864b908b31c2dd16a4b",
+						"api_domain": "https://www.zohoapis.com",
+						"token_type": "Bearer",
+						"expires_in": 3600
+					}
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-02-03T17:40:43Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

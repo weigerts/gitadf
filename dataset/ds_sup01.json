@@ -1,0 +1,13 @@
+{
+	"name": "ds_sup01",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_supplier00",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

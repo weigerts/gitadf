@@ -1,0 +1,46 @@
+{
+	"name": "ds_ud_listoffiles",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_ud_destination",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "ListOfFiles.csv",
+				"folderPath": "config",
+				"container": "udemyadf"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "No",
+				"type": "String"
+			},
+			{
+				"name": "FullURL",
+				"type": "String"
+			},
+			{
+				"name": "BaseURL",
+				"type": "String"
+			},
+			{
+				"name": "SourceRelativeURL",
+				"type": "String"
+			},
+			{
+				"name": "FileName",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

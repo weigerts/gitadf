@@ -1,0 +1,48 @@
+{
+	"name": "AzureSqldemo",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqldemo",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Invoice_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Cust_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Year",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Product_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Product",
+				"type": "varchar"
+			},
+			{
+				"name": "Sales",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Sales_Details"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
