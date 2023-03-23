@@ -1,6 +1,17 @@
 {
 	"name": "ppl_ud_git_demo",
 	"properties": {
+		"activities": [
+			{
+				"name": "Wait1",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 3
+				}
+			}
+		],
 		"annotations": []
 	}
 }
