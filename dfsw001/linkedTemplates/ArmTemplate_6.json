@@ -1,0 +1,2167 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "dfsw001"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/DatalabBrasil')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_datalab_brws0361",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SourceDataset_52z')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_Sql_brwcl007_02",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_DatalabBrasil')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_brws0090",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"schemaName": {
+						"type": "string",
+						"defaultValue": "dbo"
+					},
+					"tableName": {
+						"type": "string",
+						"defaultValue": "SelloutMensal_EluxInfo"
+					}
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_datalab')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_Sql_brwcl007_02",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sup02')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_supplierinfo",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"param_ls_cnpj": {
+							"value": "@dataset().cnpj",
+							"type": "Expression"
+						},
+						"pdatai": {
+							"value": "@formatDateTime(subtractFromTime(utcNow(),60,'Day'),'yyyy-MM-dd')",
+							"type": "Expression"
+						},
+						"pdataf": {
+							"value": "@formatDateTime(subtractFromTime(utcNow(),1,'Day'),'yyyy-MM-dd')",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"cnpj": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/filiais')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dbsup01",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "codigo",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "cnpj",
+						"type": "varchar"
+					},
+					{
+						"name": "bairro",
+						"type": "varchar"
+					},
+					{
+						"name": "cep",
+						"type": "varchar"
+					},
+					{
+						"name": "cidade",
+						"type": "varchar"
+					},
+					{
+						"name": "complemento",
+						"type": "varchar"
+					},
+					{
+						"name": "domicilio_fiscal",
+						"type": "varchar"
+					},
+					{
+						"name": "logradouro",
+						"type": "varchar"
+					},
+					{
+						"name": "numero",
+						"type": "varchar"
+					},
+					{
+						"name": "razao_social",
+						"type": "varchar"
+					},
+					{
+						"name": "uf",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "sup01",
+					"table": "filiais"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/advworkswwimergedf')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "AdventureWorksProducts",
+								"type": "DatasetReference"
+							},
+							"name": "advworksdbsource"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_wwimportersstockitems",
+								"type": "DatasetReference"
+							},
+							"name": "wwimportsdbsource"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_wwimportersstockitems",
+								"type": "DatasetReference"
+							},
+							"name": "wwimporterscolorsource"
+						},
+						{
+							"dataset": {
+								"referenceName": "AdventureWorksProducts",
+								"type": "DatasetReference"
+							},
+							"name": "advworkscheckmodel"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_wwimportersstockitems",
+								"type": "DatasetReference"
+							},
+							"name": "wwimportersgetinvoiceevents"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_mergedbproducts",
+								"type": "DatasetReference"
+							},
+							"name": "MergeDBProductsSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_mergedbclothes",
+								"type": "DatasetReference"
+							},
+							"name": "mergedbclothesink"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_advworksblob",
+								"type": "DatasetReference"
+							},
+							"name": "advworksblobsink"
+						}
+					],
+					"transformations": [
+						{
+							"name": "sortbyname"
+						},
+						{
+							"name": "filterdiscontinued"
+						},
+						{
+							"name": "derivedfinalcostandproducttype"
+						},
+						{
+							"name": "derivedproducttype"
+						},
+						{
+							"name": "selectadvworkscolumns"
+						},
+						{
+							"name": "selectwwimporterscolumns"
+						},
+						{
+							"name": "wwimporterscolorslookup"
+						},
+						{
+							"name": "advworkssplitclothesfromproducts"
+						},
+						{
+							"name": "wwimporterssplitclothesfromproducts"
+						},
+						{
+							"name": "checkrepeatedclothes"
+						},
+						{
+							"name": "unionallclothes"
+						},
+						{
+							"name": "unionallproducts"
+						},
+						{
+							"name": "joinmodel"
+						},
+						{
+							"name": "aggregatebyproductmodelname"
+						},
+						{
+							"name": "rankbyavgprice"
+						},
+						{
+							"name": "addpkclothes"
+						},
+						{
+							"name": "addpkproducts"
+						},
+						{
+							"name": "AlterRow1"
+						},
+						{
+							"name": "deriveprofitability"
+						},
+						{
+							"name": "windowclothes"
+						},
+						{
+							"name": "parsejsoncolumn"
+						},
+						{
+							"name": "flattenevents"
+						},
+						{
+							"name": "parsejsonevents"
+						},
+						{
+							"name": "pivoteventdates"
+						},
+						{
+							"name": "derivecomplexsubcolumns"
+						},
+						{
+							"name": "MapDriftedeventdates",
+							"description": "Creates an explicit mapping for each drifted column"
+						},
+						{
+							"name": "unpivoteventdates"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          ProductID as integer,",
+						"          Name as string,",
+						"          ProductNumber as string,",
+						"          MakeFlag as boolean,",
+						"          FinishedGoodsFlag as boolean,",
+						"          Color as string,",
+						"          SafetyStockLevel as integer,",
+						"          ReorderPoint as integer,",
+						"          StandardCost as decimal(19,4),",
+						"          ListPrice as decimal(19,4),",
+						"          Size as string,",
+						"          SizeUnitMeasureCode as string,",
+						"          WeightUnitMeasureCode as string,",
+						"          Weight as decimal(8,2),",
+						"          DaysToManufacture as integer,",
+						"          ProductLine as string,",
+						"          Class as string,",
+						"          Style as string,",
+						"          ProductSubcategoryID as integer,",
+						"          ProductModelID as integer,",
+						"          SellStartDate as timestamp,",
+						"          SellEndDate as timestamp,",
+						"          DiscontinuedDate as timestamp,",
+						"          rowguid as string,",
+						"          ModifiedDate as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table',",
+						"     partitionBy('roundRobin', 2)) ~> advworksdbsource",
+						"source(output(",
+						"          StockItemID as integer,",
+						"          StockItemName as string,",
+						"          SupplierID as integer,",
+						"          ColorID as integer,",
+						"          UnitPackageID as integer,",
+						"          OuterPackageID as integer,",
+						"          Brand as string,",
+						"          Size as string,",
+						"          LeadTimeDays as integer,",
+						"          QuantityPerOuter as integer,",
+						"          IsChillerStock as boolean,",
+						"          Barcode as string,",
+						"          TaxRate as decimal(18,3),",
+						"          UnitPrice as decimal(18,2),",
+						"          RecommendedRetailPrice as decimal(18,2),",
+						"          TypicalWeightPerUnit as decimal(18,3),",
+						"          MarketingComments as string,",
+						"          InternalComments as string,",
+						"          Photo as binary,",
+						"          CustomFields as string,",
+						"          Tags as string,",
+						"          SearchDetails as string,",
+						"          LastEditedBy as integer,",
+						"          ValidFrom as timestamp,",
+						"          ValidTo as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> wwimportsdbsource",
+						"source(output(",
+						"          ColorID as integer,",
+						"          Color as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'select ColorID,ColorName as Color from Warehouse.Colors',",
+						"     format: 'query') ~> wwimporterscolorsource",
+						"source(output(",
+						"          ProductModelID as integer,",
+						"          ProductModelName as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'select ProductModelID, Name as ProductModelName from Production.ProductModel',",
+						"     format: 'query') ~> advworkscheckmodel",
+						"source(output(",
+						"          InvoiceID as integer,",
+						"          ReturnedDeliveryData as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'select InvoiceID, [ReturnedDeliveryData] from [Sales].[Invoices]',",
+						"     format: 'query') ~> wwimportersgetinvoiceevents",
+						"wwimportsdbsource sort(asc(StockItemName, true),",
+						"     caseInsensitive: true) ~> sortbyname",
+						"advworksdbsource filter(isNull(SellEndDate)) ~> filterdiscontinued",
+						"sortbyname derive(cost = UnitPrice*(1+(TaxRate/100)),",
+						"          itemType = case(\r",
+						"    in(['S','M','L','3XL','3XS','4XL','5XL','6XL','7XL','XS','XXS','XL','XXL'],Size)\r",
+						"    ,'Clothing','Product'\r",
+						")) ~> derivedfinalcostandproducttype",
+						"selectadvworkscolumns derive(itemType = case(\r",
+						"    in(['S','M','L','XL'],Size)\r",
+						"    ,'Clothing','Product'\r",
+						")) ~> derivedproducttype",
+						"joinmodel select(mapColumn(",
+						"          Name,",
+						"          Color,",
+						"          Cost = StandardCost,",
+						"          RetailPrice = ListPrice,",
+						"          Size",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectadvworkscolumns",
+						"wwimporterscolorslookup select(mapColumn(",
+						"          Name = StockItemName,",
+						"          ColorID = Color,",
+						"          cost,",
+						"          RetailPrice = RecommendedRetailPrice,",
+						"          Size,",
+						"          itemType",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectwwimporterscolumns",
+						"derivedfinalcostandproducttype, wwimporterscolorsource lookup(wwimportsdbsource@ColorID == wwimporterscolorsource@ColorID,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> wwimporterscolorslookup",
+						"derivedproducttype split(itemType== 'Product',",
+						"     disjoint: false) ~> advworkssplitclothesfromproducts@(advworksproducts, advworksclothing)",
+						"selectwwimporterscolumns split(itemType == 'Product',",
+						"     disjoint: false) ~> wwimporterssplitclothesfromproducts@(wwimportersproducts, wwimportersclothing)",
+						"advworkssplitclothesfromproducts@advworksclothing, wwimporterssplitclothesfromproducts@wwimportersproducts exists(advworkssplitclothesfromproducts@advworksclothing@Name == wwimporterssplitclothesfromproducts@wwimportersproducts@Name,",
+						"     negate:true,",
+						"     broadcast: 'auto')~> checkrepeatedclothes",
+						"checkrepeatedclothes, wwimporterssplitclothesfromproducts@wwimportersclothing union(byName: true)~> unionallclothes",
+						"wwimporterssplitclothesfromproducts@wwimportersproducts, advworkssplitclothesfromproducts@advworksproducts union(byName: true)~> unionallproducts",
+						"filterdiscontinued, advworkscheckmodel join(advworksdbsource@ProductModelID == advworkscheckmodel@ProductModelID,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinmodel",
+						"joinmodel aggregate(groupBy(ProductModelName),",
+						"     AverageCost = avg(StandardCost)) ~> aggregatebyproductmodelname",
+						"aggregatebyproductmodelname rank(desc(AverageCost, true),",
+						"     caseInsensitive: true,",
+						"     output(Rank as long),",
+						"     dense: true) ~> rankbyavgprice",
+						"windowclothes keyGenerate(output(ClothingID as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> addpkclothes",
+						"unionallproducts keyGenerate(output(ProductID as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> addpkproducts",
+						"addpkclothes alterRow(upsertIf(true())) ~> AlterRow1",
+						"unionallclothes derive(Profitability = iif(unionallclothes@Cost==0, toDecimal(0), RetailPrice/unionallclothes@Cost)) ~> deriveprofitability",
+						"deriveprofitability window(over(Size),",
+						"     desc(Profitability, true),",
+						"     Rank = denseRank()) ~> windowclothes",
+						"wwimportersgetinvoiceevents parse(JsonData = ReturnedDeliveryData ? (ReceivedBy as string,",
+						"          DeliveredWhen as date,",
+						"          Events as string[]),",
+						"     format: 'json',",
+						"     documentForm: 'singleDocument') ~> parsejsoncolumn",
+						"parsejsoncolumn foldDown(unroll(JsonData.Events),",
+						"     mapColumn(",
+						"          InvoiceID,",
+						"          ReceivedBy = JsonData.ReceivedBy,",
+						"          DeliveredWhen = JsonData.DeliveredWhen,",
+						"          Events = JsonData.Events",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> flattenevents",
+						"flattenevents parse(EventDetails = Events ? (Event as string,",
+						"          EvenTime as date,",
+						"          ConNote as string),",
+						"     format: 'json',",
+						"     documentForm: 'singleDocument') ~> parsejsonevents",
+						"derivecomplexsubcolumns pivot(groupBy(InvoiceID,",
+						"          ReceivedBy,",
+						"          DeliveredWhen,",
+						"          ComNoteCode),",
+						"     pivotBy(EventName),",
+						"     {} = first(EventTime),",
+						"     columnNaming: '$N$V',",
+						"     lateral: true) ~> pivoteventdates",
+						"parsejsonevents derive(EventName = EventDetails.Event,",
+						"          EventTime = EventDetails.EvenTime,",
+						"          ComNoteCode = EventDetails.ConNote) ~> derivecomplexsubcolumns",
+						"pivoteventdates derive(DeliveryAttempt = toDate(byName('DeliveryAttempt')),",
+						"          {Ready for collection} = toDate(byName('Ready for collection'))) ~> MapDriftedeventdates",
+						"MapDriftedeventdates unpivot(output(",
+						"          DeliveryEvent as string,",
+						"          DeliveredWhen as date,",
+						"          DeliveryAttempt as date,",
+						"          {Ready for collection} as date",
+						"     ),",
+						"     ungroupBy(InvoiceID,",
+						"          ReceivedBy,",
+						"          ComNoteCode),",
+						"     lateral: true,",
+						"     ignoreNullPivots: false) ~> unpivoteventdates",
+						"addpkproducts sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     recreate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 1,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          Name,",
+						"          ColorID,",
+						"          cost = unionallproducts@cost,",
+						"          RetailPrice,",
+						"          Size,",
+						"          itemType,",
+						"          Color",
+						"     )) ~> MergeDBProductsSink",
+						"AlterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['Name'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 1,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          Name,",
+						"          Color,",
+						"          Cost = unionallclothes@Cost,",
+						"          RetailPrice,",
+						"          Size,",
+						"          itemType,",
+						"          ColorID",
+						"     )) ~> mergedbclothesink",
+						"rankbyavgprice sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['RankProductModelByCost.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> advworksblobsink"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_sellout')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Destination_sellout_stocksales",
+								"type": "DatasetReference"
+							},
+							"name": "stocksales"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Destination_sellout_stocksales",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     limit: 100,",
+						"     ignoreNoFilesFound: false) ~> stocksales",
+						"stocksales sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_ud_demo2')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_ud_raw",
+								"type": "DatasetReference"
+							},
+							"name": "sourcecustomer"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_ud_processed",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(output(",
+						"          Column_1 as string,",
+						"          Column_2 as string,",
+						"          Column_3 as string,",
+						"          Column_4 as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> sourcecustomer",
+						"sourcecustomer sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['processedcustomerdata.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_ud_example')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_ud_raw",
+								"type": "DatasetReference"
+							},
+							"name": "sourcecustom"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_ud_processed",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(output(",
+						"          customer_id as string,",
+						"          Customerslastname as string,",
+						"          Customersfirstname as string,",
+						"          CustomersCountry as string,",
+						"          Customersage as short,",
+						"          Customersgender as string,",
+						"          Customersemail as string,",
+						"          Customersprofession as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> sourcecustom",
+						"sourcecustom sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_ud_payment_details')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_ud_sc73",
+								"type": "DatasetReference"
+							},
+							"name": "sourceCustomers"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_ud_sec73_payments",
+								"type": "DatasetReference"
+							},
+							"name": "sourcePayments"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_ud_sec73_orders",
+								"type": "DatasetReference"
+							},
+							"name": "sourceOrders"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_ud_sec73_sinc",
+								"type": "DatasetReference"
+							},
+							"name": "sinkPaymentDetails"
+						}
+					],
+					"transformations": [
+						{
+							"name": "filterOnlyNonErrorData"
+						},
+						{
+							"name": "filterCustomerAge20to70"
+						},
+						{
+							"name": "selectRelevantCustomerFields"
+						},
+						{
+							"name": "selectRelevantPaymentFields"
+						},
+						{
+							"name": "selectRelevantColumnsOrders"
+						},
+						{
+							"name": "joinCustomerOrder"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "selectPaymentDetailsRequiredFIelds"
+						},
+						{
+							"name": "pivotDueAmount"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     pminage as integer,",
+						"     pmaxage as integer",
+						"}",
+						"source(output(",
+						"          customer_id as string,",
+						"          Customerslastname as string,",
+						"          Customersfirstname as string,",
+						"          CustomersCountry as string,",
+						"          Customersage as short,",
+						"          Customersgender as string,",
+						"          Customersemail as string,",
+						"          Customersprofession as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> sourceCustomers",
+						"source(output(",
+						"          order_id as string,",
+						"          payment_id as string,",
+						"          type as string,",
+						"          descriptions as string,",
+						"          pDate as date 'dd/MM/yyyy',",
+						"          Status as string,",
+						"          Details as string,",
+						"          Total_Invoice as short,",
+						"          Due_Amount as double",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> sourcePayments",
+						"source(output(",
+						"          order_id as string,",
+						"          customer_id as string,",
+						"          Store_id as string,",
+						"          Date as date 'dd/MM/yyyy'",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> sourceOrders",
+						"sourcePayments filter(Status != \"error\" && (not(equals(Status, 'refunded')))) ~> filterOnlyNonErrorData",
+						"sourceCustomers filter(Customersage>=$pminage && Customersage<=$pmaxage) ~> filterCustomerAge20to70",
+						"filterCustomerAge20to70 select(mapColumn(",
+						"          customer_id,",
+						"          Customer_First_Name = Customersfirstname,",
+						"          Customer_Last_Name = Customerslastname,",
+						"          Customer_Country = CustomersCountry,",
+						"          Customer_Age = Customersage",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectRelevantCustomerFields",
+						"filterOnlyNonErrorData select(mapColumn(",
+						"          payment_id,",
+						"          order_id,",
+						"          Status,",
+						"          Due_Amount,",
+						"          Total_Invoice",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectRelevantPaymentFields",
+						"sourceOrders select(mapColumn(",
+						"          order_id,",
+						"          customer_id,",
+						"          Date",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectRelevantColumnsOrders",
+						"selectRelevantCustomerFields, selectRelevantColumnsOrders join(selectRelevantCustomerFields@customer_id == selectRelevantColumnsOrders@customer_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinCustomerOrder",
+						"joinCustomerOrder, selectRelevantPaymentFields join(selectRelevantColumnsOrders@order_id == selectRelevantPaymentFields@order_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 select(mapColumn(",
+						"          customer_id = selectRelevantCustomerFields@customer_id,",
+						"          Date,",
+						"          Customer_First_Name,",
+						"          Customer_Last_Name,",
+						"          Customer_Country,",
+						"          Customer_Age,",
+						"          Status,",
+						"          Due_Amount,",
+						"          Total_Invoice",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectPaymentDetailsRequiredFIelds",
+						"selectPaymentDetailsRequiredFIelds pivot(groupBy(customer_id,",
+						"          Date,",
+						"          Customer_First_Name,",
+						"          Customer_Last_Name,",
+						"          Customer_Country,",
+						"          Customer_Age,",
+						"          Total_Invoice),",
+						"     pivotBy(Status, ['received', 'not received']),",
+						"     Due_amount = sum(Due_Amount),",
+						"     columnNaming: '$N$V',",
+						"     lateral: true) ~> pivotDueAmount",
+						"pivotDueAmount sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:[(concat(\"PaymentDetails\",toString($pminage),toString($pmaxage),\".csv\"))],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sinkPaymentDetails"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_ud_scd_type1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_ud_dbdemosw01_tbluser",
+								"type": "DatasetReference"
+							},
+							"name": "sourcedata"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_ud_dbdemosw02",
+								"type": "DatasetReference"
+							},
+							"name": "destinationData"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_ud_dbdemosw02",
+								"type": "DatasetReference"
+							},
+							"name": "sinkData"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_ud_dbdemosw02",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "existsornot"
+						},
+						{
+							"name": "existsornot1"
+						},
+						{
+							"name": "alterRowdata"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Key as integer,",
+						"          Name as string,",
+						"          Phone as string,",
+						"          Last_m as date",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> sourcedata",
+						"source(output(",
+						"          Key as integer,",
+						"          Name as string,",
+						"          Phone as string,",
+						"          Last_m as date",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> destinationData",
+						"sourcedata, destinationData exists(sourcedata@Key == destinationData@Key,",
+						"     negate:true,",
+						"     broadcast: 'auto')~> existsornot",
+						"sourcedata, destinationData exists(sourcedata@Key == destinationData@Key,",
+						"     negate:false,",
+						"     broadcast: 'auto')~> existsornot1",
+						"existsornot1 alterRow(updateIf(true())) ~> alterRowdata",
+						"existsornot sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          Key as integer,",
+						"          Name as string,",
+						"          Phone as string,",
+						"          Last_m as date",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          Key,",
+						"          Name,",
+						"          Phone,",
+						"          Last_m",
+						"     )) ~> sinkData",
+						"alterRowdata sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          Key as integer,",
+						"          Name as string,",
+						"          Phone as string,",
+						"          Last_m as date",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:true,",
+						"     upsertable:false,",
+						"     keys:['Key'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dfsup03')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_sup03",
+								"type": "DatasetReference"
+							},
+							"name": "srcsup03",
+							"description": "Import data from ds_sup03"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable_sup03",
+								"type": "DatasetReference"
+							},
+							"name": "sinkestoque"
+						}
+					],
+					"transformations": [
+						{
+							"name": "flatten1"
+						},
+						{
+							"name": "derivedColumn1"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     pdata as string,",
+						"     cnpj as string",
+						"}",
+						"source(output(",
+						"          body as (continuationToken as string, data as (data_movimento as date, deposito as short, ean_principal as long, parceiro as short, quantidade as short, sku_id as string)[], success as boolean, totalRecords as short),",
+						"          headers as [string,string]",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     httpMethod: 'GET',",
+						"     timeout: 30,",
+						"     requestInterval: 0,",
+						"     paginationRules: ['supportRFC5988' -> 'true'],",
+						"     responseFormat: ['type' -> 'json', 'documentForm' -> 'arrayOfDocuments']) ~> srcsup03",
+						"srcsup03 foldDown(unroll(body.data),",
+						"     mapColumn(",
+						"          data_movimento = body.data.data_movimento,",
+						"          deposito = body.data.deposito,",
+						"          ean_principal = body.data.ean_principal,",
+						"          parceiro = body.data.parceiro,",
+						"          quantidade = body.data.quantidade,",
+						"          sku_id = body.data.sku_id",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> flatten1",
+						"flatten1 derive(cnpj = toString($cnpj)) ~> derivedColumn1",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          cnpj as string,",
+						"          ean_principal as string,",
+						"          deposito as string,",
+						"          parceiro as integer,",
+						"          quantidade as integer,",
+						"          sku_id as string,",
+						"          data_movimento as date",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          ean_principal,",
+						"          deposito,",
+						"          parceiro,",
+						"          quantidade,",
+						"          sku_id,",
+						"          data_movimento,",
+						"          cnpj",
+						"     )) ~> sinkestoque"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dfsupestoque')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_sup03",
+								"type": "DatasetReference"
+							},
+							"name": "srcsupestoque"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable_sup03",
+								"type": "DatasetReference"
+							},
+							"name": "sinkestoque"
+						}
+					],
+					"transformations": [
+						{
+							"name": "flatten1"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "alterRow1"
+						}
+					],
+					"scriptLines": [
+						"parameters{",
+						"     dfpcnpj as string",
+						"}",
+						"source(output(",
+						"          body as (continuationToken as string, data as (data_movimento as date, deposito as short, ean_principal as long, parceiro as short, quantidade as short, sku_id as string)[], success as boolean, totalRecords as short),",
+						"          headers as [string,string]",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     httpMethod: 'GET',",
+						"     timeout: 30,",
+						"     requestInterval: 0,",
+						"     paginationRules: ['supportRFC5988' -> 'true'],",
+						"     responseFormat: ['type' -> 'json', 'documentForm' -> 'arrayOfDocuments']) ~> srcsupestoque",
+						"srcsupestoque foldDown(unroll(body.data),",
+						"     mapColumn(",
+						"          data_movimento = body.data.data_movimento,",
+						"          deposito = body.data.deposito,",
+						"          ean_principal = body.data.ean_principal,",
+						"          parceiro = body.data.parceiro,",
+						"          quantidade = body.data.quantidade,",
+						"          sku_id = body.data.sku_id",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> flatten1",
+						"flatten1 derive(cnpj = $dfpcnpj) ~> derivedColumn1",
+						"derivedColumn1 alterRow(upsertIf(true())) ~> alterRow1",
+						"alterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          cnpj as string,",
+						"          ean_principal as string,",
+						"          deposito as string,",
+						"          parceiro as integer,",
+						"          quantidade as integer,",
+						"          sku_id as string,",
+						"          data_movimento as date",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['cnpj','ean_principal','deposito'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          cnpj,",
+						"          ean_principal,",
+						"          deposito,",
+						"          parceiro,",
+						"          quantidade,",
+						"          sku_id,",
+						"          data_movimento",
+						"     )) ~> sinkestoque"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SelloutMensal_daysofstock')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "calculates days of stock per customer per product",
+				"activities": [
+					{
+						"name": "sellout_daysofstock",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "."
+							},
+							{
+								"name": "Destination",
+								"value": "/INPUT/ShoppingBrasilDiario.csv"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "with\n\ttabela as (\n\t\tselect \n\t\t'competitors_sellout_monthly' as Origin,\n\t\tcast(Periodo as date) as Date,\n\t\tRegional as Regiao,\n\t\tSupervisor + Modelo as chave,\n\t\tBandeira as Seller,\n\t\t--null as MeioDeDivulgacao,\n\t\tMarca as Brand,\n\t\tGrupoProduto as Product_Group,\n\t\tModelo as Product,\n\t\t'Days of Stock' as KPI, \n\t\tTotalVenda as Value,\n\t\tPosicaoEstoque\n\t\tfrom DatalabBrasil.dbo.SelloutMensal_EluxInfo smei\n\t\twhere\n\t\t\tisnull(TotalVenda, 0) > 0\n\t\t\tand isnull(PosicaoEstoque, 0) >= 0 \n\t\t\tand Periodo between dateadd(month, -2, current_timestamp) and dateadd(month, 1, current_timestamp)\n\t\t\t--and Periodo >= dateadd(month, -2, current_timestamp)\n\t),\n\trank as (\n\t\tselect \n\t\t\trank () over (partition by Chave order by Date asc) as ranking,\n\t\t\tDate,\n\t\t\tchave,\n\t\t\tValue,\n\t\t\tPosicaoEstoque\n\t\tfrom tabela\n\t)\n\tselect \n\t\ttabela.Origin,\n\t\ttabela.Date,\n\t\ttabela.Regiao,\n\t\ttabela.Seller,\n\t\tnull as '5NO',\n\t\tnull as MeioDeDivulgacao,\n\t\ttabela.Brand,\n\t\ttabela.Product_Group,\n\t\ttabela.Product,\n\t\tnull as Product_LCM,\n\t\tnull as Corte_LCM,\n\t\tnull as Tracking_Model_LCM,\n\t\ttabela.KPI, \n\t\t--tabela.Value,\n\t\t--case when coalesce (r.posicaoestoque, 0) = 0 and coalesce(r2.posicaoestoque, 0) > 0 then 1 else 0 end as flag,\n\t\tcast((r2.posicaoestoque / r.value) as float) as Value \n\tfrom rank r\n\tleft join tabela on tabela.chave = r.chave\n\tleft join rank r2 on r.chave = r2.chave and r.ranking = r2.ranking + 1\n--\tleft join competitors on r2.chave = competitors.chave and r2.Periodo = competitors.Date\n\twhere \n\t\tcase when coalesce (r.posicaoestoque, 0) = 0 and coalesce(r2.posicaoestoque, 0) > 0 then 1 else 0 end = 1",
+								"queryTimeout": "00:30:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "SftpWriteSettings",
+									"operationTimeout": "01:00:00",
+									"useTempFileRename": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Origin",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"type": "String",
+											"physicalType": "String",
+											"ordinal": 1
+										}
+									},
+									{
+										"source": {
+											"name": "Date",
+											"type": "DateTime",
+											"physicalType": "date"
+										},
+										"sink": {
+											"type": "String",
+											"physicalType": "String",
+											"ordinal": 2
+										}
+									},
+									{
+										"source": {
+											"name": "Regiao",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"type": "String",
+											"physicalType": "String",
+											"ordinal": 3
+										}
+									},
+									{
+										"source": {
+											"name": "Seller",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"type": "String",
+											"physicalType": "String",
+											"ordinal": 4
+										}
+									},
+									{
+										"source": {
+											"name": "5NO",
+											"type": "Int32",
+											"physicalType": "int"
+										},
+										"sink": {
+											"type": "String",
+											"physicalType": "String",
+											"ordinal": 5
+										}
+									},
+									{
+										"source": {
+											"name": "MeioDeDivulgacao",
+											"type": "Int32",
+											"physicalType": "int"
+										},
+										"sink": {
+											"type": "String",
+											"physicalType": "String",
+											"ordinal": 6
+										}
+									},
+									{
+										"source": {
+											"name": "Brand",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"type": "String",
+											"physicalType": "String",
+											"ordinal": 7
+										}
+									},
+									{
+										"source": {
+											"name": "Product_Group",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"type": "String",
+											"physicalType": "String",
+											"ordinal": 8
+										}
+									},
+									{
+										"source": {
+											"name": "Product",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"type": "String",
+											"physicalType": "String",
+											"ordinal": 9
+										}
+									},
+									{
+										"source": {
+											"name": "Product_LCM",
+											"type": "Int32",
+											"physicalType": "int"
+										},
+										"sink": {
+											"type": "String",
+											"physicalType": "String",
+											"ordinal": 10
+										}
+									},
+									{
+										"source": {
+											"name": "Corte_LCM",
+											"type": "Int32",
+											"physicalType": "int"
+										},
+										"sink": {
+											"type": "String",
+											"physicalType": "String",
+											"ordinal": 11
+										}
+									},
+									{
+										"source": {
+											"name": "Tracking_Model_LCM",
+											"type": "Int32",
+											"physicalType": "int"
+										},
+										"sink": {
+											"type": "String",
+											"physicalType": "String",
+											"ordinal": 12
+										}
+									},
+									{
+										"source": {
+											"name": "KPI",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"type": "String",
+											"physicalType": "String",
+											"ordinal": 13
+										}
+									},
+									{
+										"source": {
+											"name": "Value",
+											"type": "Double",
+											"physicalType": "float"
+										},
+										"sink": {
+											"type": "String",
+											"physicalType": "String",
+											"ordinal": 14
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DatalabBrasil",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Destination_sellout_stocksales",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Dev_Zilliant_Competitors"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-02-21T14:06:20Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DatalabBrasil')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SelloutMensal_stock_sales')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This task uploads the data from ShoppingBrasilDiario from D-1. ",
+				"activities": [
+					{
+						"name": "sellout_stocksales",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "."
+							},
+							{
+								"name": "Destination",
+								"value": "/INPUT/ShoppingBrasilDiario.csv"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "\tselect --top(100000)\n\t\t'competitors_sellout_monthly' as Origin,\n\t\tcast(Periodo as date) as Date,\n\t\tRegional as Regiao,\n\t\tBandeira as Seller,\n\t\tSupervisor as '5NO',\n\t\tnull as MeioDeDivulgacao,\n\t\tMarca as Brand,\n\t\tGrupoProduto as Product_Group,\n\t\tModelo as Product,\n\t\tnull as Product_LCM,\n\t\tnull as Corte_LCM,\n\t\tnull as Tracking_Model_LCM,\n\t\t'Stock' as KPI, \n\t\tPosicaoEstoque as Value\n\tfrom DatalabBrasilDW.dbo.SelloutMensal_EluxInfo smei \n\twhere 1=1\n\t\tand Periodo >= dateadd(month,-24,current_timestamp)\n\t--order by 2 desc\n\t\tand PosicaoEstoque <> ''\nunion all\n\tselect --top(10)\n\t\t'competitors_sellout_monthly' as Origin,\n\t\tcast(Periodo as date) as Date,\n\t\tRegional as Regiao,\n\t\tBandeira as Seller,\n\t\tSupervisor as '5NO',\n\t\tnull as MeioDeDivulgacao,\n\t\tMarca as Brand,\n\t\tGrupoProduto as Product_Group,\n\t\tModelo as Product,\n\t\tnull as Product_LCM,\n\t\tnull as Corte_LCM,\n\t\tnull as Tracking_Model_LCM,\n\t\t'Sales Units' as KPI, \n\t\tTotalVenda as Value\n\tfrom DatalabBrasilDW.dbo.SelloutMensal_EluxInfo smei \n\twhere 1=1\n\t\tand Periodo >= dateadd(month,-24,current_timestamp)\n\torder by 2 desc",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "SftpWriteSettings",
+									"operationTimeout": "01:00:00",
+									"useTempFileRename": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Origin",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 1
+										}
+									},
+									{
+										"source": {
+											"name": "Date",
+											"type": "DateTime"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 2
+										}
+									},
+									{
+										"source": {
+											"name": "Regiao",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 3
+										}
+									},
+									{
+										"source": {
+											"name": "Seller",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 4
+										}
+									},
+									{
+										"source": {
+											"name": "5NO",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 5
+										}
+									},
+									{
+										"source": {
+											"name": "MeioDeDivulgacao",
+											"type": "Int32"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 6
+										}
+									},
+									{
+										"source": {
+											"name": "Brand",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 7
+										}
+									},
+									{
+										"source": {
+											"name": "Product_Group",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 8
+										}
+									},
+									{
+										"source": {
+											"name": "Product",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 9
+										}
+									},
+									{
+										"source": {
+											"name": "Product_LCM",
+											"type": "Int32"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 10
+										}
+									},
+									{
+										"source": {
+											"name": "Corte_LCM",
+											"type": "Int32"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 11
+										}
+									},
+									{
+										"source": {
+											"name": "Tracking_Model_LCM",
+											"type": "Int32"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 12
+										}
+									},
+									{
+										"source": {
+											"name": "KPI",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 13
+										}
+									},
+									{
+										"source": {
+											"name": "Value",
+											"type": "Int32"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 14
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DatalabBrasil",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Destination_sellout_stocksales",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Dev_Zilliant_Competitors"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-02-21T14:04:48Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DatalabBrasil')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/advworkswwimergepi')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "advworkswwimergedf",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "advworkswwimergedf",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"advworksdbsource": {},
+									"wwimportsdbsource": {},
+									"wwimporterscolorsource": {},
+									"advworkscheckmodel": {},
+									"wwimportersgetinvoiceevents": {},
+									"MergeDBProductsSink": {},
+									"mergedbclothesink": {},
+									"advworksblobsink": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Udemy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-11-30T17:49:38Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/advworkswwimergedf')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_process_formula1_data')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Execute ingestion Ppl",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "pl_ingest_formula1_data",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"p_windows_end_date": {
+									"value": "@pipeline().parameters.p_windows_end_date",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					{
+						"name": "Execute Trans Ppl",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute ingestion Ppl",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "pl_transform_formula1_data",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"p_windows_end_date": {
+									"value": "@pipeline().parameters.p_windows_end_date",
+									"type": "Expression"
+								}
+							}
+						}
+					}
+				],
+				"concurrency": 1,
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"p_windows_end_date": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Udemy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-11-30T17:49:41Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ppl_datalab')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "select top(2)'SellOut_Info' as Origin,cast(Periodo as date) as Date,Regional as Regiao,Bandeira as Seller,'-' as MeioDeDivulgacao,Marca as Brand,GrupoProduto as Product_Group,Modelo as Product,'-' as Product_LCM,'-' as Corte_LCM,'-' as Tracking_Model_LCM,'Sales Units' as KPI,TotalVenda as Value from DatalabBrasilDW.dbo.SelloutMensal_EluxInfo smei where 1=1 and Periodo >= dateadd(month,-24,current_timestamp)",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_datalab",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_azuredatalake_csv",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-02-02T17:53:57Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_datalab')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ppl_gfkbrazil_monthly')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "competitors_gfkbrazil_monthly",
+						"description": "queries the monthly gfk from datalab (temporarily)",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "select \n\t\t'competitors_gfkbrazil_monthly' as Origin,\n\t\t'BR10' as Sales_Org,\n\t\tcast(gm.[Periodo] as date) as Date,\n\t\tgm.Tipo as Region,\n\t\tnull as Seller,\n\t\tnull as '5NO',\n\t\tnull as MeioDeDivulgacao,\n\t\tgm.MarcaGFK as Brand,\n\t\tgm.GrupoProdutoGFK as Product_Group,\n\t\tgm.Modelo  as Product,\n\t\tdgl.Item_LCM as Product_LCM,\n\t\tdgl.Corte_LCM as Corte_LCM,\n\t\tdgl.Tracking_Model_LCM as Tracking_Model_LCM,\n\t\tgm.[KPI] as KPI,\n\t\tround(gm.[Value], 5) as Value\n\tfrom DatalabBrasilDW.dbo.GfkBrasilMensal gm\n\tleft join DatalabBrasil.dbo.DP_GFKBrasil_LCM dgl on dgl.Item_GFK = gm.Modelo \n\twhere 1=1\n\t\tand gm.KPI in ('Sales Units', 'Sales Value', 'Sales Value BRL ', 'Unw. Avg. Distribution Total', 'Wgt. Avg. Distribution Total')\n\t\tand gm.MarcaGFK not in ('<Tradebrand & Exclusive>')\n\t\tand gm.Modelo not in ('Trade Model') -- modelo especifico mas que não é aberto a marca do fabricante\n\t\t--and gm.[Pais] = 'Brazil'\n\t\tand Periodo >= dateadd(month, -6, CURRENT_TIMESTAMP)\n\t\tand gm.Tipo in ('Internet', 'Traditional', '<Grand Total>')",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "SftpWriteSettings",
+									"operationTimeout": "01:00:00",
+									"useTempFileRename": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".csv"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Origin",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "Origin",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Sales_Org",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "Sales_Org",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Date",
+											"type": "DateTime",
+											"physicalType": "date"
+										},
+										"sink": {
+											"name": "Date",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Region",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "Region",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Seller",
+											"type": "Int32",
+											"physicalType": "int"
+										},
+										"sink": {
+											"name": "Seller",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "5NO",
+											"type": "Int32",
+											"physicalType": "int"
+										},
+										"sink": {
+											"name": "5NO",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "MeioDeDivulgacao",
+											"type": "Int32",
+											"physicalType": "int"
+										},
+										"sink": {
+											"name": "MeioDeDivulgacao",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Brand",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "Brand",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Product_Group",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "Product_Group",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Product",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "Product",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Product_LCM",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "Product_LCM",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Corte_LCM",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "Corte_LCM",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Tracking_Model_LCM",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "Tracking_Model_LCM",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "KPI",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "KPI",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Value",
+											"type": "Double",
+											"physicalType": "float"
+										},
+										"sink": {
+											"name": "Value",
+											"type": "String",
+											"physicalType": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DatalabBrasil",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Destination_gfkbrazil_monthly",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Dev_Zilliant_Competitors"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-03-17T11:37:00Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DatalabBrasil')]"
+			]
+		}
+	]
+}

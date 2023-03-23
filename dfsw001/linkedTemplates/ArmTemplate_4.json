@@ -1,0 +1,1248 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "dfsw001"
+		},
+		"ls_Sql_brwcl007_02_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_Sql_brwcl007_02'"
+		},
+		"ls_brws0090_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_brws0090'"
+		},
+		"ls_brws0090_sellout_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_brws0090_sellout'"
+		},
+		"ls_datalab_brws0361_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_datalab_brws0361'"
+		},
+		"ls_dbsup01_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_dbsup01'",
+			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=svrsup01.database.windows.net;Initial Catalog=dbsup01;User ID=weigesan"
+		},
+		"ls_supplierinfo_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_supplierinfo'"
+		},
+		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0518-134833-soz5v67"
+		},
+		"ls_supplierinfo_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "@{concat('https://sipolatti-supplierinfo-api.azurewebsites.net/v1/filial/',linkedService().param_ls_cnpj,'/movimento?DataInicial=',linkedService().pdatai,'&DataFinal=',linkedService().pdataf)}"
+		},
+		"ls_supplierinfo_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "electrolux"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_ud_input_csvdata_git')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_http_github_step2c",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"prelativegiturl": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": {
+							"value": "@dataset().prelativegiturl",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_ud_listoffiles')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_ud_destination",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "ListOfFiles.csv",
+						"folderPath": "config",
+						"container": "udemyadf"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "No",
+						"type": "String"
+					},
+					{
+						"name": "FullURL",
+						"type": "String"
+					},
+					{
+						"name": "BaseURL",
+						"type": "String"
+					},
+					{
+						"name": "SourceRelativeURL",
+						"type": "String"
+					},
+					{
+						"name": "FileName",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_ud_processed')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_ud_processed",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "processed",
+						"container": "udemyadf"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_ud_raw')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_ud_raw",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Customers.csv",
+						"folderPath": "raw",
+						"container": "udemyadf"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_ud_sc73')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_ud_source",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Customers.csv",
+						"folderPath": "sec73",
+						"container": "udemyadf"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "customer_id",
+						"type": "String"
+					},
+					{
+						"name": "Customerslastname",
+						"type": "String"
+					},
+					{
+						"name": "Customersfirstname",
+						"type": "String"
+					},
+					{
+						"name": "CustomersCountry",
+						"type": "String"
+					},
+					{
+						"name": "Customersage",
+						"type": "String"
+					},
+					{
+						"name": "Customersgender",
+						"type": "String"
+					},
+					{
+						"name": "Customersemail",
+						"type": "String"
+					},
+					{
+						"name": "Customersprofession",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_ud_sec73_orders')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_ud_source",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Orders.csv",
+						"folderPath": "sec73",
+						"container": "udemyadf"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "order_id",
+						"type": "String"
+					},
+					{
+						"name": "customer_id",
+						"type": "String"
+					},
+					{
+						"name": "Store_id",
+						"type": "String"
+					},
+					{
+						"name": "Date",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_ud_sec73_payments')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_ud_source",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Payments.csv",
+						"folderPath": "sec73",
+						"container": "udemyadf"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "order_id",
+						"type": "String"
+					},
+					{
+						"name": "payment_id",
+						"type": "String"
+					},
+					{
+						"name": "type",
+						"type": "String"
+					},
+					{
+						"name": "descriptions",
+						"type": "String"
+					},
+					{
+						"name": "pDate",
+						"type": "String"
+					},
+					{
+						"name": "Status",
+						"type": "String"
+					},
+					{
+						"name": "Details",
+						"type": "String"
+					},
+					{
+						"name": "Total_Invoice",
+						"type": "String"
+					},
+					{
+						"name": "Due_Amount",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_ud_sec73_sinc')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_ud_processed",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "sec73",
+						"container": "udemyadf"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_ud_source')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_ud_source",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "input",
+						"container": "udemyadf"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Id",
+						"type": "String"
+					},
+					{
+						"name": "Sales",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_ud_sqlserver')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_ud_sqlserver",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "SalesLT",
+					"table": "Customer"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_wwimportersstockitems')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "wwimporters",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "StockItemID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "StockItemName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SupplierID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ColorID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "UnitPackageID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "OuterPackageID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Brand",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Size",
+						"type": "nvarchar"
+					},
+					{
+						"name": "LeadTimeDays",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "QuantityPerOuter",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "IsChillerStock",
+						"type": "bit"
+					},
+					{
+						"name": "Barcode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "TaxRate",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					},
+					{
+						"name": "UnitPrice",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "RecommendedRetailPrice",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "TypicalWeightPerUnit",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					},
+					{
+						"name": "MarketingComments",
+						"type": "nvarchar"
+					},
+					{
+						"name": "InternalComments",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Photo",
+						"type": "varbinary"
+					},
+					{
+						"name": "CustomFields",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Tags",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SearchDetails",
+						"type": "nvarchar"
+					},
+					{
+						"name": "LastEditedBy",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ValidFrom",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "ValidTo",
+						"type": "datetime2",
+						"scale": 7
+					}
+				],
+				"typeProperties": {
+					"schema": "Warehouse",
+					"table": "StockItems"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDatabricks1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-8384718081778057.17.azuredatabricks.net",
+					"accessToken": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVault1",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "databricks",
+						"secretVersion": "7b66cf0b343d455bbeda67f2f03e4997"
+					},
+					"existingClusterId": "[parameters('AzureDatabricks1_properties_typeProperties_existingClusterId')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_Sql_brwcl007_02')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_Sql_brwcl007_02_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "brws0360",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_brws0090')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_brws0090_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "brws0360",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_brws0090_sellout')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_brws0090_sellout_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "brws0360",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_datalab_brws0361')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_datalab_brws0361_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "brws0361",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_dbsup01')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_dbsup01_connectionString')]",
+					"password": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVault1",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "dbpwd"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_supplierinfo')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"param_ls_cnpj": {
+						"type": "string"
+					},
+					"pdatai": {
+						"type": "string",
+						"defaultValue": "vdatai"
+					},
+					"pdataf": {
+						"type": "string",
+						"defaultValue": "vdataf"
+					}
+				},
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('ls_supplierinfo_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Basic",
+					"userName": "[parameters('ls_supplierinfo_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('ls_supplierinfo_password')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "integrationRuntime1",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_ud_sec97_EmployeeSalesDetails')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "ls_ud_source",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sourceEmployee"
+						},
+						{
+							"linkedService": {
+								"referenceName": "ls_ud_source",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sourceDepartments"
+						},
+						{
+							"linkedService": {
+								"referenceName": "ls_ud_source",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sourceRegionData"
+						},
+						{
+							"linkedService": {
+								"referenceName": "ls_ud_source",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sourceSalesNA"
+						},
+						{
+							"linkedService": {
+								"referenceName": "ls_ud_source",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sourceSalesSA"
+						},
+						{
+							"linkedService": {
+								"referenceName": "ls_ud_source",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sourceSalesEAA"
+						}
+					],
+					"sinks": [
+						{
+							"linkedService": {
+								"referenceName": "ls_ud_destination",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sinkTotalSalesYear"
+						},
+						{
+							"linkedService": {
+								"referenceName": "ls_ud_destination",
+								"type": "LinkedServiceReference"
+							},
+							"name": "SummaryEmployeeSalesSAcsv"
+						},
+						{
+							"linkedService": {
+								"referenceName": "ls_ud_destination",
+								"type": "LinkedServiceReference"
+							},
+							"name": "SummaryEmployeeSalesNAcsv"
+						},
+						{
+							"linkedService": {
+								"referenceName": "ls_ud_destination",
+								"type": "LinkedServiceReference"
+							},
+							"name": "SummaryEmployeeSalesEAAcsv"
+						}
+					],
+					"transformations": [
+						{
+							"name": "unionSalesDataSANA"
+						},
+						{
+							"name": "unionSalesAll"
+						},
+						{
+							"name": "unpivotSalesData"
+						},
+						{
+							"name": "derivedColumnSalesYear"
+						},
+						{
+							"name": "EmployeewithAdditionalColumns"
+						},
+						{
+							"name": "selectRelevantEmployeeFields"
+						},
+						{
+							"name": "selectRelevantDepartmentFields"
+						},
+						{
+							"name": "selectRelevantRegionFields"
+						},
+						{
+							"name": "lookupEmployeeDepartments"
+						},
+						{
+							"name": "lookupEmployeeDepartmentRegion"
+						},
+						{
+							"name": "joinEmployeeSalesData"
+						},
+						{
+							"name": "selectEmployeeSalesDataRelevantFields"
+						},
+						{
+							"name": "SummaryEmployeeSalesRegion"
+						},
+						{
+							"name": "TotalSalesPerYear"
+						},
+						{
+							"name": "split1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Employee_id as integer,",
+						"          store_id as string,",
+						"          department_id as integer,",
+						"          firstname as string,",
+						"          lastname as string,",
+						"          Country as string,",
+						"          age as integer,",
+						"          gender as string,",
+						"          email as string,",
+						"          phone as long",
+						"     ),",
+						"     useSchema: false,",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'delimited',",
+						"     container: 'udemyadf',",
+						"     folderPath: 'sec97',",
+						"     fileName: 'Employee.csv',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true) ~> sourceEmployee",
+						"source(output(",
+						"          department_id as short,",
+						"          Department as string,",
+						"          Phone as integer,",
+						"          Email as string",
+						"     ),",
+						"     useSchema: false,",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'delimited',",
+						"     container: 'udemyadf',",
+						"     folderPath: 'sec97',",
+						"     fileName: 'Department.csv',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true) ~> sourceDepartments",
+						"source(output(",
+						"          region_id as short,",
+						"          region as string",
+						"     ),",
+						"     useSchema: false,",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'delimited',",
+						"     container: 'udemyadf',",
+						"     folderPath: 'sec97',",
+						"     fileName: 'Region.csv',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true) ~> sourceRegionData",
+						"source(output(",
+						"          Employee_id as short,",
+						"          Sales_2018 as short,",
+						"          Sales_2019 as short,",
+						"          Sales_2020 as short,",
+						"          Sales_2021 as short,",
+						"          Sales_2022 as short,",
+						"          Sales_2023 as short",
+						"     ),",
+						"     useSchema: false,",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'delimited',",
+						"     container: 'udemyadf',",
+						"     folderPath: 'sec97',",
+						"     fileName: 'Sales_NA.csv',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true) ~> sourceSalesNA",
+						"source(output(",
+						"          Employee_id as short,",
+						"          Sales_2018 as short,",
+						"          Sales_2019 as short,",
+						"          Sales_2020 as short,",
+						"          Sales_2021 as short,",
+						"          Sales_2022 as short,",
+						"          Sales_2023 as short",
+						"     ),",
+						"     useSchema: false,",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'delimited',",
+						"     container: 'udemyadf',",
+						"     folderPath: 'sec97',",
+						"     fileName: 'Sales_SA.csv',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true) ~> sourceSalesSA",
+						"source(output(",
+						"          Employee_id as short,",
+						"          Sales_2018 as short,",
+						"          Sales_2019 as short,",
+						"          Sales_2020 as short,",
+						"          Sales_2021 as short,",
+						"          Sales_2022 as short,",
+						"          Sales_2023 as short",
+						"     ),",
+						"     useSchema: false,",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'delimited',",
+						"     container: 'udemyadf',",
+						"     folderPath: 'sec97',",
+						"     fileName: 'Sales_EAA.csv',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true) ~> sourceSalesEAA",
+						"sourceSalesNA, sourceSalesSA union(byName: true)~> unionSalesDataSANA",
+						"unionSalesDataSANA, sourceSalesEAA union(byName: false)~> unionSalesAll",
+						"unionSalesAll unpivot(output(",
+						"          Year as string,",
+						"          Sales as short",
+						"     ),",
+						"     ungroupBy(Employee_id),",
+						"     lateral: true,",
+						"     ignoreNullPivots: false) ~> unpivotSalesData",
+						"unpivotSalesData derive(Year = toInteger(right(Year,4))) ~> derivedColumnSalesYear",
+						"sourceEmployee derive(Employee_Full_Name = concat(firstname,' ',lastname),",
+						"          Employee_Country = split(Country,', ')[1],",
+						"          Employee_Region_ID = split(Country, ', ')[2]) ~> EmployeewithAdditionalColumns",
+						"EmployeewithAdditionalColumns select(mapColumn(",
+						"          Employee_id,",
+						"          department_id,",
+						"          Employee_Full_Name,",
+						"          Employee_Country,",
+						"          Employee_Region_ID",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectRelevantEmployeeFields",
+						"sourceDepartments select(mapColumn(",
+						"          department_id,",
+						"          Department",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectRelevantDepartmentFields",
+						"sourceRegionData select(mapColumn(",
+						"          Employee_region_id = region_id,",
+						"          Employee_region = region",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectRelevantRegionFields",
+						"selectRelevantEmployeeFields, selectRelevantDepartmentFields lookup(selectRelevantEmployeeFields@department_id == selectRelevantDepartmentFields@department_id,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookupEmployeeDepartments",
+						"lookupEmployeeDepartments, selectRelevantRegionFields lookup(toShort(selectRelevantEmployeeFields@Employee_Region_ID) == selectRelevantRegionFields@Employee_region_id,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookupEmployeeDepartmentRegion",
+						"lookupEmployeeDepartmentRegion, derivedColumnSalesYear join(selectRelevantEmployeeFields@Employee_id == unpivotSalesData@Employee_id,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinEmployeeSalesData",
+						"joinEmployeeSalesData select(mapColumn(",
+						"          Employee_id = selectRelevantEmployeeFields@Employee_id,",
+						"          Employee_Full_Name,",
+						"          Employee_Country,",
+						"          Employee_region,",
+						"          Year,",
+						"          Sales",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectEmployeeSalesDataRelevantFields",
+						"selectEmployeeSalesDataRelevantFields aggregate(groupBy(Employee_id,",
+						"          Employee_Full_Name,",
+						"          Employee_Country,",
+						"          Employee_region),",
+						"     Total_Sales = sum(Sales),",
+						"          Avg_Sales = avg(Sales),",
+						"          Max_Sales = max(Sales),",
+						"          Min_Sales = min(Sales)) ~> SummaryEmployeeSalesRegion",
+						"selectEmployeeSalesDataRelevantFields aggregate(groupBy(Employee_id,",
+						"          Employee_Full_Name,",
+						"          Year),",
+						"     Total_Sales = sum(Sales),",
+						"          Avg_Sales = avg(Sales),",
+						"          Max_Sales = max(Sales),",
+						"          Min_Sales = min(Sales)) ~> TotalSalesPerYear",
+						"SummaryEmployeeSalesRegion split(Employee_region == 'South America',",
+						"     Employee_region == 'North America',",
+						"     disjoint: false) ~> split1@(SummaryEmployeeSalesSA, SummaryEmployeeSalesNA, SummaryEmployeeSalesEAA)",
+						"TotalSalesPerYear sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'delimited',",
+						"     container: 'udemyadf',",
+						"     folderPath: 'sec97',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true,",
+						"     partitionFileNames:['TotalSalesYear.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sinkTotalSalesYear",
+						"split1@SummaryEmployeeSalesSA sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'delimited',",
+						"     container: 'udemyadf',",
+						"     folderPath: 'sec97',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true,",
+						"     partitionFileNames:['SummaryEmployeeSalesSA.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> SummaryEmployeeSalesSAcsv",
+						"split1@SummaryEmployeeSalesNA sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'delimited',",
+						"     container: 'udemyadf',",
+						"     folderPath: 'sec97',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true,",
+						"     partitionFileNames:['SummaryEmployeeSalesNA.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> SummaryEmployeeSalesNAcsv",
+						"split1@SummaryEmployeeSalesEAA sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'delimited',",
+						"     container: 'udemyadf',",
+						"     folderPath: 'sec97',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true,",
+						"     partitionFileNames:['SummaryEmployeeSalesEAA.csv'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> SummaryEmployeeSalesEAAcsv"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Lookup Demo Exemplo')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup year",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[salesYear]",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "AzureSqldemo",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "ForEach Year",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup year",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Lookup year').output.value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Copy data from sql to datalake",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderStoredProcedureName": "[[dbo].[Salesin]",
+											"storedProcedureParameters": {
+												"Per_year": {
+													"type": "Int32",
+													"value": {
+														"value": "@int(item().year)",
+														"type": "Expression"
+													}
+												}
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "AzureSqldemo",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "ds_azuredatalake_csv",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Udemy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-11-30T17:49:38Z"
+			},
+			"dependsOn": []
+		}
+	]
+}

@@ -1,0 +1,177 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "dfsw001"
+		},
+		"Abs_zilliant_connectionString": {
+			"value": ""
+		},
+		"AzureBlobStorage1_connectionString": {
+			"value": ""
+		},
+		"AzureBlobStorage_ls_connectionString": {
+			"value": ""
+		},
+		"AzureDataLakeStorage1_accountKey": {
+			"value": ""
+		},
+		"AzureSqlDatabase_ls_connectionString": {
+			"value": ""
+		},
+		"AzureSqldemo_connectionString": {
+			"value": ""
+		},
+		"LS_adventureworks_connectionString": {
+			"value": ""
+		},
+		"Salesforce_Homolog_password": {
+			"value": ""
+		},
+		"Salesforce_Homolog_securityToken": {
+			"value": ""
+		},
+		"Sftp Zilliant DEV_password": {
+			"value": ""
+		},
+		"ls_Sql_brwcl007_02_connectionString": {
+			"value": ""
+		},
+		"ls_advworksblob_connectionString": {
+			"value": ""
+		},
+		"ls_azuredtl_folder1_connectionString": {
+			"value": ""
+		},
+		"ls_blob_connectionString": {
+			"value": ""
+		},
+		"ls_brws0090_connectionString": {
+			"value": ""
+		},
+		"ls_brws0090_sellout_connectionString": {
+			"value": ""
+		},
+		"ls_datalab_brws0361_connectionString": {
+			"value": ""
+		},
+		"ls_dbsup01_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=svrsup01.database.windows.net;Initial Catalog=dbsup01;User ID=weigesan"
+		},
+		"ls_formula1dl_storage_accountKey": {
+			"value": ""
+		},
+		"ls_gfk_br_password": {
+			"value": ""
+		},
+		"ls_mergedb_connectionString": {
+			"value": ""
+		},
+		"ls_sqldb1_connectionString": {
+			"value": ""
+		},
+		"ls_sqlserverdrjoe_connectionString": {
+			"value": ""
+		},
+		"ls_supplier00_password": {
+			"value": ""
+		},
+		"ls_supplierinfo_password": {
+			"value": ""
+		},
+		"ls_supplierinfo_03_password": {
+			"value": ""
+		},
+		"ls_ud_datalake_accountKey": {
+			"value": ""
+		},
+		"ls_ud_dbdemosw01_connectionString": {
+			"value": ""
+		},
+		"ls_ud_dbdemosw02_connectionString": {
+			"value": ""
+		},
+		"ls_ud_destination_connectionString": {
+			"value": ""
+		},
+		"ls_ud_processed_connectionString": {
+			"value": ""
+		},
+		"ls_ud_raw_connectionString": {
+			"value": ""
+		},
+		"ls_ud_source_connectionString": {
+			"value": ""
+		},
+		"ls_ud_sqlserver_connectionString": {
+			"value": ""
+		},
+		"wwimporters_connectionString": {
+			"value": ""
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"value": "https://elxa3dtlsw001.dfs.core.windows.net/"
+		},
+		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+			"value": "0518-134833-soz5v67"
+		},
+		"AzureKeyVault1_properties_typeProperties_baseUrl": {
+			"value": "https://KV-SW002.vault.azure.net/"
+		},
+		"Salesforce_Homolog_properties_typeProperties_environmentUrl": {
+			"value": "https://electroluxla--homolog.sandbox.my.salesforce.com/"
+		},
+		"Salesforce_Homolog_properties_typeProperties_username": {
+			"value": "svc-sensidia@electrolux.com.homolog"
+		},
+		"Sftp Zilliant DEV_properties_typeProperties_host": {
+			"value": "eu1-ftp-dev.zilliant.com"
+		},
+		"Sftp Zilliant DEV_properties_typeProperties_userName": {
+			"value": "electrolux.dev"
+		},
+		"ls_formula1dl_storage_properties_typeProperties_url": {
+			"value": "https://elxa3dtlsw001.dfs.core.windows.net"
+		},
+		"ls_gfk_br_properties_typeProperties_url": {
+			"value": "http://www.gfkcr.com.br:1024/gfk_elux_files"
+		},
+		"ls_gfk_br_properties_typeProperties_userName": {
+			"value": "elux"
+		},
+		"ls_http_github_step2c_properties_typeProperties_url": {
+			"value": "https://github.com"
+		},
+		"ls_supplier00_properties_typeProperties_url": {
+			"value": "https://sipolatti-supplierinfo-api.azurewebsites.net/v1/filial"
+		},
+		"ls_supplier00_properties_typeProperties_userName": {
+			"value": "electrolux"
+		},
+		"ls_supplierinfo_properties_typeProperties_url": {
+			"value": "@{concat('https://sipolatti-supplierinfo-api.azurewebsites.net/v1/filial/',linkedService().param_ls_cnpj,'/movimento?DataInicial=',linkedService().pdatai,'&DataFinal=',linkedService().pdataf)}"
+		},
+		"ls_supplierinfo_properties_typeProperties_userName": {
+			"value": "electrolux"
+		},
+		"ls_supplierinfo_03_properties_typeProperties_url": {
+			"value": "@{concat('https://sipolatti-supplierinfo-api.azurewebsites.net/v1/filial/',linkedService().param_cnpj,'/estoque?Data=',linkedService().param_data)}"
+		},
+		"ls_supplierinfo_03_properties_typeProperties_userName": {
+			"value": "electrolux"
+		},
+		"ls_ud_datalake_properties_typeProperties_url": {
+			"value": "https://elxa3dtlsw001.dfs.core.windows.net/"
+		},
+		"tr_process_formula1_properties_pipeline_parameters_p_windows_end_date": {
+			"value": "@trigger().outputs.WindowEndTime"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

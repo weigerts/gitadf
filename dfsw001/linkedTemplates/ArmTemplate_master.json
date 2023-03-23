@@ -1,0 +1,561 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "dfsw001"
+		},
+		"Abs_zilliant_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'Abs_zilliant'"
+		},
+		"AzureBlobStorage1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
+		},
+		"AzureBlobStorage_ls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage_ls'"
+		},
+		"AzureDataLakeStorage1_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage1'"
+		},
+		"AzureSqlDatabase_ls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase_ls'"
+		},
+		"AzureSqldemo_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqldemo'"
+		},
+		"LS_adventureworks_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_adventureworks'"
+		},
+		"Salesforce_Homolog_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'Salesforce_Homolog'"
+		},
+		"Salesforce_Homolog_securityToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'securityToken' of 'Salesforce_Homolog'"
+		},
+		"Sftp Zilliant DEV_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'Sftp Zilliant DEV'"
+		},
+		"ls_Sql_brwcl007_02_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_Sql_brwcl007_02'"
+		},
+		"ls_advworksblob_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_advworksblob'"
+		},
+		"ls_azuredtl_folder1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_azuredtl_folder1'"
+		},
+		"ls_blob_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_blob'"
+		},
+		"ls_brws0090_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_brws0090'"
+		},
+		"ls_brws0090_sellout_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_brws0090_sellout'"
+		},
+		"ls_datalab_brws0361_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_datalab_brws0361'"
+		},
+		"ls_dbsup01_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_dbsup01'",
+			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=svrsup01.database.windows.net;Initial Catalog=dbsup01;User ID=weigesan"
+		},
+		"ls_formula1dl_storage_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'ls_formula1dl_storage'"
+		},
+		"ls_gfk_br_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_gfk_br'"
+		},
+		"ls_mergedb_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_mergedb'"
+		},
+		"ls_sqldb1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_sqldb1'"
+		},
+		"ls_sqlserverdrjoe_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_sqlserverdrjoe'"
+		},
+		"ls_supplier00_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_supplier00'"
+		},
+		"ls_supplierinfo_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_supplierinfo'"
+		},
+		"ls_supplierinfo_03_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_supplierinfo_03'"
+		},
+		"ls_ud_datalake_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'ls_ud_datalake'"
+		},
+		"ls_ud_dbdemosw01_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_ud_dbdemosw01'"
+		},
+		"ls_ud_dbdemosw02_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_ud_dbdemosw02'"
+		},
+		"ls_ud_destination_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_ud_destination'"
+		},
+		"ls_ud_processed_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_ud_processed'"
+		},
+		"ls_ud_raw_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_ud_raw'"
+		},
+		"ls_ud_source_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_ud_source'"
+		},
+		"ls_ud_sqlserver_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_ud_sqlserver'"
+		},
+		"wwimporters_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'wwimporters'"
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://elxa3dtlsw001.dfs.core.windows.net/"
+		},
+		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0518-134833-soz5v67"
+		},
+		"AzureKeyVault1_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://KV-SW002.vault.azure.net/"
+		},
+		"Salesforce_Homolog_properties_typeProperties_environmentUrl": {
+			"type": "string",
+			"defaultValue": "https://electroluxla--homolog.sandbox.my.salesforce.com/"
+		},
+		"Salesforce_Homolog_properties_typeProperties_username": {
+			"type": "string",
+			"defaultValue": "svc-sensidia@electrolux.com.homolog"
+		},
+		"Sftp Zilliant DEV_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "eu1-ftp-dev.zilliant.com"
+		},
+		"Sftp Zilliant DEV_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "electrolux.dev"
+		},
+		"ls_formula1dl_storage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://elxa3dtlsw001.dfs.core.windows.net"
+		},
+		"ls_gfk_br_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "http://www.gfkcr.com.br:1024/gfk_elux_files"
+		},
+		"ls_gfk_br_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "elux"
+		},
+		"ls_http_github_step2c_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://github.com"
+		},
+		"ls_supplier00_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://sipolatti-supplierinfo-api.azurewebsites.net/v1/filial"
+		},
+		"ls_supplier00_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "electrolux"
+		},
+		"ls_supplierinfo_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "@{concat('https://sipolatti-supplierinfo-api.azurewebsites.net/v1/filial/',linkedService().param_ls_cnpj,'/movimento?DataInicial=',linkedService().pdatai,'&DataFinal=',linkedService().pdataf)}"
+		},
+		"ls_supplierinfo_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "electrolux"
+		},
+		"ls_supplierinfo_03_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "@{concat('https://sipolatti-supplierinfo-api.azurewebsites.net/v1/filial/',linkedService().param_cnpj,'/estoque?Data=',linkedService().param_data)}"
+		},
+		"ls_supplierinfo_03_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "electrolux"
+		},
+		"ls_ud_datalake_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://elxa3dtlsw001.dfs.core.windows.net/"
+		},
+		"tr_process_formula1_properties_pipeline_parameters_p_windows_end_date": {
+			"type": "string",
+			"defaultValue": "@trigger().outputs.WindowEndTime"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "dfsw001_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"Abs_zilliant_connectionString": {
+						"value": "[parameters('Abs_zilliant_connectionString')]"
+					},
+					"AzureBlobStorage1_connectionString": {
+						"value": "[parameters('AzureBlobStorage1_connectionString')]"
+					},
+					"AzureBlobStorage_ls_connectionString": {
+						"value": "[parameters('AzureBlobStorage_ls_connectionString')]"
+					},
+					"AzureDataLakeStorage1_accountKey": {
+						"value": "[parameters('AzureDataLakeStorage1_accountKey')]"
+					},
+					"AzureSqlDatabase_ls_connectionString": {
+						"value": "[parameters('AzureSqlDatabase_ls_connectionString')]"
+					},
+					"AzureSqldemo_connectionString": {
+						"value": "[parameters('AzureSqldemo_connectionString')]"
+					},
+					"LS_adventureworks_connectionString": {
+						"value": "[parameters('LS_adventureworks_connectionString')]"
+					},
+					"Salesforce_Homolog_password": {
+						"value": "[parameters('Salesforce_Homolog_password')]"
+					},
+					"Salesforce_Homolog_securityToken": {
+						"value": "[parameters('Salesforce_Homolog_securityToken')]"
+					},
+					"Sftp Zilliant DEV_password": {
+						"value": "[parameters('Sftp Zilliant DEV_password')]"
+					},
+					"ls_advworksblob_connectionString": {
+						"value": "[parameters('ls_advworksblob_connectionString')]"
+					},
+					"ls_azuredtl_folder1_connectionString": {
+						"value": "[parameters('ls_azuredtl_folder1_connectionString')]"
+					},
+					"ls_blob_connectionString": {
+						"value": "[parameters('ls_blob_connectionString')]"
+					},
+					"ls_formula1dl_storage_accountKey": {
+						"value": "[parameters('ls_formula1dl_storage_accountKey')]"
+					},
+					"ls_gfk_br_password": {
+						"value": "[parameters('ls_gfk_br_password')]"
+					},
+					"AzureDataLakeStorage1_properties_typeProperties_url": {
+						"value": "[parameters('AzureDataLakeStorage1_properties_typeProperties_url')]"
+					},
+					"AzureKeyVault1_properties_typeProperties_baseUrl": {
+						"value": "[parameters('AzureKeyVault1_properties_typeProperties_baseUrl')]"
+					},
+					"Salesforce_Homolog_properties_typeProperties_environmentUrl": {
+						"value": "[parameters('Salesforce_Homolog_properties_typeProperties_environmentUrl')]"
+					},
+					"Salesforce_Homolog_properties_typeProperties_username": {
+						"value": "[parameters('Salesforce_Homolog_properties_typeProperties_username')]"
+					},
+					"Sftp Zilliant DEV_properties_typeProperties_host": {
+						"value": "[parameters('Sftp Zilliant DEV_properties_typeProperties_host')]"
+					},
+					"Sftp Zilliant DEV_properties_typeProperties_userName": {
+						"value": "[parameters('Sftp Zilliant DEV_properties_typeProperties_userName')]"
+					},
+					"ls_formula1dl_storage_properties_typeProperties_url": {
+						"value": "[parameters('ls_formula1dl_storage_properties_typeProperties_url')]"
+					},
+					"ls_gfk_br_properties_typeProperties_url": {
+						"value": "[parameters('ls_gfk_br_properties_typeProperties_url')]"
+					},
+					"ls_gfk_br_properties_typeProperties_userName": {
+						"value": "[parameters('ls_gfk_br_properties_typeProperties_userName')]"
+					},
+					"ls_http_github_step2c_properties_typeProperties_url": {
+						"value": "[parameters('ls_http_github_step2c_properties_typeProperties_url')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "dfsw001_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"ls_mergedb_connectionString": {
+						"value": "[parameters('ls_mergedb_connectionString')]"
+					},
+					"ls_sqldb1_connectionString": {
+						"value": "[parameters('ls_sqldb1_connectionString')]"
+					},
+					"ls_sqlserverdrjoe_connectionString": {
+						"value": "[parameters('ls_sqlserverdrjoe_connectionString')]"
+					},
+					"ls_supplier00_password": {
+						"value": "[parameters('ls_supplier00_password')]"
+					},
+					"ls_supplierinfo_03_password": {
+						"value": "[parameters('ls_supplierinfo_03_password')]"
+					},
+					"ls_ud_datalake_accountKey": {
+						"value": "[parameters('ls_ud_datalake_accountKey')]"
+					},
+					"ls_ud_dbdemosw01_connectionString": {
+						"value": "[parameters('ls_ud_dbdemosw01_connectionString')]"
+					},
+					"ls_ud_dbdemosw02_connectionString": {
+						"value": "[parameters('ls_ud_dbdemosw02_connectionString')]"
+					},
+					"ls_ud_destination_connectionString": {
+						"value": "[parameters('ls_ud_destination_connectionString')]"
+					},
+					"ls_ud_processed_connectionString": {
+						"value": "[parameters('ls_ud_processed_connectionString')]"
+					},
+					"ls_ud_raw_connectionString": {
+						"value": "[parameters('ls_ud_raw_connectionString')]"
+					},
+					"ls_ud_source_connectionString": {
+						"value": "[parameters('ls_ud_source_connectionString')]"
+					},
+					"ls_ud_sqlserver_connectionString": {
+						"value": "[parameters('ls_ud_sqlserver_connectionString')]"
+					},
+					"wwimporters_connectionString": {
+						"value": "[parameters('wwimporters_connectionString')]"
+					},
+					"ls_supplier00_properties_typeProperties_url": {
+						"value": "[parameters('ls_supplier00_properties_typeProperties_url')]"
+					},
+					"ls_supplier00_properties_typeProperties_userName": {
+						"value": "[parameters('ls_supplier00_properties_typeProperties_userName')]"
+					},
+					"ls_supplierinfo_03_properties_typeProperties_url": {
+						"value": "[parameters('ls_supplierinfo_03_properties_typeProperties_url')]"
+					},
+					"ls_supplierinfo_03_properties_typeProperties_userName": {
+						"value": "[parameters('ls_supplierinfo_03_properties_typeProperties_userName')]"
+					},
+					"ls_ud_datalake_properties_typeProperties_url": {
+						"value": "[parameters('ls_ud_datalake_properties_typeProperties_url')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'dfsw001_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "dfsw001_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'dfsw001_ArmTemplate_1')]"
+			]
+		},
+		{
+			"name": "dfsw001_ArmTemplate_3",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_3.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'dfsw001_ArmTemplate_2')]"
+			]
+		},
+		{
+			"name": "dfsw001_ArmTemplate_4",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_4.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"ls_Sql_brwcl007_02_connectionString": {
+						"value": "[parameters('ls_Sql_brwcl007_02_connectionString')]"
+					},
+					"ls_brws0090_connectionString": {
+						"value": "[parameters('ls_brws0090_connectionString')]"
+					},
+					"ls_brws0090_sellout_connectionString": {
+						"value": "[parameters('ls_brws0090_sellout_connectionString')]"
+					},
+					"ls_datalab_brws0361_connectionString": {
+						"value": "[parameters('ls_datalab_brws0361_connectionString')]"
+					},
+					"ls_dbsup01_connectionString": {
+						"value": "[parameters('ls_dbsup01_connectionString')]"
+					},
+					"ls_supplierinfo_password": {
+						"value": "[parameters('ls_supplierinfo_password')]"
+					},
+					"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+						"value": "[parameters('AzureDatabricks1_properties_typeProperties_existingClusterId')]"
+					},
+					"ls_supplierinfo_properties_typeProperties_url": {
+						"value": "[parameters('ls_supplierinfo_properties_typeProperties_url')]"
+					},
+					"ls_supplierinfo_properties_typeProperties_userName": {
+						"value": "[parameters('ls_supplierinfo_properties_typeProperties_userName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'dfsw001_ArmTemplate_3')]"
+			]
+		},
+		{
+			"name": "dfsw001_ArmTemplate_5",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_5.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'dfsw001_ArmTemplate_4')]"
+			]
+		},
+		{
+			"name": "dfsw001_ArmTemplate_6",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_6.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'dfsw001_ArmTemplate_5')]"
+			]
+		},
+		{
+			"name": "dfsw001_ArmTemplate_7",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_7.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"tr_process_formula1_properties_pipeline_parameters_p_windows_end_date": {
+						"value": "[parameters('tr_process_formula1_properties_pipeline_parameters_p_windows_end_date')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'dfsw001_ArmTemplate_6')]"
+			]
+		}
+	]
+}

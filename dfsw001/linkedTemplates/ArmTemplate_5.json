@@ -1,0 +1,2512 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "dfsw001"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Until file Exist')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Until file exist",
+						"type": "Until",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@variables('fileexist')",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Get Metadata country",
+									"type": "GetMetadata",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataset": {
+											"referenceName": "ds_ud_raw",
+											"type": "DatasetReference",
+											"parameters": {}
+										},
+										"fieldList": [
+											"exists"
+										],
+										"storeSettings": {
+											"type": "AzureBlobStorageReadSettings",
+											"recursive": true,
+											"enablePartitionDiscovery": false
+										},
+										"formatSettings": {
+											"type": "DelimitedTextReadSettings"
+										}
+									}
+								},
+								{
+									"name": "If Condition file exist",
+									"type": "IfCondition",
+									"dependsOn": [
+										{
+											"activity": "Get Metadata country",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@activity('Get Metadata country').output.exists",
+											"type": "Expression"
+										},
+										"ifFalseActivities": [
+											{
+												"name": "Wait1",
+												"type": "Wait",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"waitTimeInSeconds": 30
+												}
+											}
+										],
+										"ifTrueActivities": [
+											{
+												"name": "Set variable1",
+												"type": "SetVariable",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"variableName": "fileexist",
+													"value": true
+												}
+											}
+										]
+									}
+								}
+							],
+							"timeout": "0.12:00:00"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"fileexist": {
+						"type": "Boolean",
+						"defaultValue": false
+					}
+				},
+				"folder": {
+					"name": "Udemy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-03-03T18:30:05Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/copy_avd_demo01')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy_28i",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Wait1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "SalesLT.Customer"
+							},
+							{
+								"name": "Destination",
+								"value": "advworkssinkcontainer//"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"validateDataConsistency": false
+						},
+						"inputs": [
+							{
+								"referenceName": "SourceDataset_28i",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DestinationDataset_28i",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Wait1",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 120
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Udemy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-11-30T17:49:38Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/for each demo')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup year",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[salesYear]",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "ds_ud_sqlserver",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "ForEach year",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup year",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Lookup year').output.value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Copy data sql to datalake",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderStoredProcedureName": "[[dbo].[Salesin]",
+											"storedProcedureParameters": {
+												"Per_year": {
+													"type": "Int32",
+													"value": {
+														"value": "@int(item().year)",
+														"type": "Expression"
+													}
+												}
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "ds_ud_sqlserver",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "Ds_ud_azuredatalakecsv",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Udemy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-03-03T16:57:18Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/get Metadata Demo')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Metadata Of Country CSV",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "ds_ud_sqlserver",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"fieldList": [
+								"exists",
+								"columnCount",
+								"structure"
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Udemy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-03-03T13:23:34Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "SftpWriteSettings",
+									"operationTimeout": "01:00:00",
+									"useTempFileRename": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_src_zilliant",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_sftp_zilliant",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-01-27T19:01:44Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_ingest_formula1_data')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Folder Details",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "ds_formula1_raw",
+								"type": "DatasetReference",
+								"parameters": {
+									"p_window_end_date": {
+										"value": "@pipeline().parameters.p_windows_end_date",
+										"type": "Expression"
+									}
+								}
+							},
+							"fieldList": [
+								"exists"
+							],
+							"storeSettings": {
+								"type": "AzureBlobFSReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "JsonReadSettings"
+							}
+						}
+					},
+					{
+						"name": "If folder exists",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Get Folder Details",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@activity('Get Folder Details').output.exists",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Ingest circuits file",
+									"type": "DatabricksNotebook",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"notebookPath": "/Users/adm-weigesan@electrolux.com/Learning/Ingestion/1.Ingest_circuits_file",
+										"baseParameters": {
+											"p_data_source": {
+												"value": "@variables('V_data_source')",
+												"type": "Expression"
+											},
+											"p_file_date": {
+												"value": "@formatDateTime(pipeline().parameters.p_windows_end_date,'yyyy-MM-dd')",
+												"type": "Expression"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "AzureDatabricks1",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Ingest Races file",
+									"type": "DatabricksNotebook",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"notebookPath": "/Users/adm-weigesan@electrolux.com/Learning/Ingestion/2.Ingest_races_file",
+										"baseParameters": {
+											"p_data_source": {
+												"value": "@variables('V_data_source')",
+												"type": "Expression"
+											},
+											"p_file_date": {
+												"value": "@formatDateTime(pipeline().parameters.p_windows_end_date,'yyyy-MM-dd')",
+												"type": "Expression"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "AzureDatabricks1",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Ingest Constructors file",
+									"type": "DatabricksNotebook",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"notebookPath": "/Users/adm-weigesan@electrolux.com/Learning/Ingestion/3.Ingest_constructors_file",
+										"baseParameters": {
+											"p_data_source": {
+												"value": "@variables('V_data_source')",
+												"type": "Expression"
+											},
+											"p_file_date": {
+												"value": "@formatDateTime(pipeline().parameters.p_windows_end_date,'yyyy-MM-dd')",
+												"type": "Expression"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "AzureDatabricks1",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Ingest Results file",
+									"type": "DatabricksNotebook",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"notebookPath": "/Users/adm-weigesan@electrolux.com/Learning/Ingestion/5.Ingest_results_file - 2 maneira",
+										"baseParameters": {
+											"p_data_source": {
+												"value": "@variables('V_data_source')",
+												"type": "Expression"
+											},
+											"p_file_date": {
+												"value": "@formatDateTime(pipeline().parameters.p_windows_end_date,'yyyy-MM-dd')",
+												"type": "Expression"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "AzureDatabricks1",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Ingest Lap_times file",
+									"type": "DatabricksNotebook",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"notebookPath": "/Users/adm-weigesan@electrolux.com/Learning/Ingestion/7.Ingest_lap_times_file",
+										"baseParameters": {
+											"p_data_source": {
+												"value": "@variables('V_data_source')",
+												"type": "Expression"
+											},
+											"p_file_date": {
+												"value": "@formatDateTime(pipeline().parameters.p_windows_end_date,'yyyy-MM-dd')",
+												"type": "Expression"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "AzureDatabricks1",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Ingest Pit_Stops file",
+									"type": "DatabricksNotebook",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"notebookPath": "/Users/adm-weigesan@electrolux.com/Learning/Ingestion/6.Ingest_pit_stops_file",
+										"baseParameters": {
+											"p_data_source": {
+												"value": "@variables('V_data_source')",
+												"type": "Expression"
+											},
+											"p_file_date": {
+												"value": "@formatDateTime(pipeline().parameters.p_windows_end_date,'yyyy-MM-dd')",
+												"type": "Expression"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "AzureDatabricks1",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Ingest Drivers file",
+									"type": "DatabricksNotebook",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"notebookPath": "/Users/adm-weigesan@electrolux.com/Learning/Ingestion/4.Ingest_drivers_file",
+										"baseParameters": {
+											"p_data_source": {
+												"value": "@variables('V_data_source')",
+												"type": "Expression"
+											},
+											"p_file_date": {
+												"value": "@formatDateTime(pipeline().parameters.p_windows_end_date,'yyyy-MM-dd')",
+												"type": "Expression"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "AzureDatabricks1",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Ingest Qualifying file",
+									"type": "DatabricksNotebook",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"notebookPath": "/Users/adm-weigesan@electrolux.com/Learning/Ingestion/8.Ingest_qualifying_file",
+										"baseParameters": {
+											"p_data_source": {
+												"value": "@variables('V_data_source')",
+												"type": "Expression"
+											},
+											"p_file_date": {
+												"value": "@formatDateTime(pipeline().parameters.p_windows_end_date,'yyyy-MM-dd')",
+												"type": "Expression"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "AzureDatabricks1",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					}
+				],
+				"concurrency": 1,
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"p_windows_end_date": {
+						"type": "string"
+					}
+				},
+				"variables": {
+					"V_data_source": {
+						"type": "String",
+						"defaultValue": "Ergast"
+					}
+				},
+				"folder": {
+					"name": "Udemy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-11-30T17:49:38Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_transform_formula1_data')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Folder Details",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "ds_formula1_raw",
+								"type": "DatasetReference",
+								"parameters": {
+									"p_window_end_date": {
+										"value": "@pipeline().parameters.p_windows_end_date",
+										"type": "Expression"
+									}
+								}
+							},
+							"fieldList": [
+								"exists"
+							],
+							"storeSettings": {
+								"type": "AzureBlobFSReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "JsonReadSettings"
+							}
+						}
+					},
+					{
+						"name": "If folder exists",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Get Folder Details",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@activity('Get Folder Details').output.exists",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Trans race results",
+									"type": "DatabricksNotebook",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"notebookPath": "/Users/adm-weigesan@electrolux.com/Learning/trans/1.race_results",
+										"baseParameters": {
+											"p_file_date": {
+												"value": "@formatDateTime(pipeline().parameters.p_windows_end_date,'yyyy-MM-dd')",
+												"type": "Expression"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "AzureDatabricks1",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Trans drivers standings",
+									"type": "DatabricksNotebook",
+									"dependsOn": [
+										{
+											"activity": "Trans race results",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"notebookPath": "/Users/adm-weigesan@electrolux.com/Learning/trans/2.driver_standings",
+										"baseParameters": {
+											"p_file_date": {
+												"value": "@formatDateTime(pipeline().parameters.p_windows_end_date,'yyyy-MM-dd')",
+												"type": "Expression"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "AzureDatabricks1",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Trans constructor standings",
+									"type": "DatabricksNotebook",
+									"dependsOn": [
+										{
+											"activity": "Trans race results",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"notebookPath": "/Users/adm-weigesan@electrolux.com/Learning/trans/3.constructor_standings",
+										"baseParameters": {
+											"p_file_date": {
+												"value": "@formatDateTime(pipeline().parameters.p_windows_end_date,'yyyy-MM-dd')",
+												"type": "Expression"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "AzureDatabricks1",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Trans calculated race results",
+									"type": "DatabricksNotebook",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"notebookPath": "/Users/adm-weigesan@electrolux.com/Learning/trans/4.calculated_race_results",
+										"baseParameters": {
+											"p_file_date": {
+												"value": "@formatDateTime(pipeline().parameters.p_windows_end_date,'yyyy-MM-dd')",
+												"type": "Expression"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "AzureDatabricks1",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					}
+				],
+				"concurrency": 1,
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"p_windows_end_date": {
+						"type": "string"
+					}
+				},
+				"variables": {
+					"V_data_source": {
+						"type": "String",
+						"defaultValue": "Ergast"
+					}
+				},
+				"folder": {
+					"name": "Udemy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-11-30T17:49:38Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ppl_copy_from_parquet_to_salesforce')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ParquetSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								}
+							},
+							"sink": {
+								"type": "SalesforceSink",
+								"writeBatchSize": 5000,
+								"writeBehavior": "upsert",
+								"externalIdFieldName": "azure",
+								"ignoreNullValues": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Parquet_Salesforce",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Sales_Data",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-09-06T14:42:20Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ppl_copy_from_salesforce')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SalesforceSource",
+								"readBehavior": "query"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Sales_Data",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Parquet_Salesforce",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-09-06T14:42:21Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ppl_gfk')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"paginationRules": {
+									"supportRFC5988": "true"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": "files.json"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_gfk_br",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_gfkbr",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-02-17T14:44:15Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ppl_shopprecos_drjoe')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "1_get_auth_token",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://accounts.zoho.com/oauth/v2/token?refresh_token=1000.1b14c960f7218a4e5cd5e8a12d4bfd75.b8610a30d6281b724b01b0611053c476&client_id=1000.6FDGAEOMQ15CT978CCOU1V0GK3BLNG&client_secret=3a78e3f381e490262e5e685486880277a4d7540fac&grant_type=refresh_token",
+							"method": "POST",
+							"headers": {},
+							"body": {
+								"access_token": "1000.6FDGAEOMQ15CT978CCOU1V0GK3BLNG",
+								"api_domain": "https://www.zohoapis.com",
+								"token_type": "Bearer",
+								"expires_in": 3600
+							}
+						}
+					},
+					{
+						"name": "3_create_export_jobid",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "2_auth_token",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://analyticsapi.zoho.com/restapi/v2/bulk/workspaces/1006245000000010001/views/1006245000009380551/data",
+							"method": "GET",
+							"headers": {
+								"Authorization": {
+									"value": "@concat('Zoho-oauthtoken ', variables('access_token'))",
+									"type": "Expression"
+								},
+								"responseFormat": "json",
+								"ZANALYTICS-ORGID": "67471564",
+								"criteria": "\\\"SHP - Integração BI\\\".\\\"Data Coleta\\\"='02-03-2023'"
+							},
+							"body": {
+								"access_token": "1000.6FDGAEOMQ15CT978CCOU1V0GK3BLNG",
+								"api_domain": "https://www.zohoapis.com",
+								"token_type": "Bearer",
+								"expires_in": 3600
+							}
+						}
+					},
+					{
+						"name": "2_auth_token",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "1_get_auth_token",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "access_token",
+							"value": {
+								"value": "@activity('1_get_auth_token').output.access_token",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "4_jobID",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "3_create_export_jobid",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "jobID",
+							"value": {
+								"value": "@activity('3_create_export_jobid').output.data.jobId",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "5_create_download_url",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "4_jobID",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "@concat('https://analyticsapi.zoho.com/restapi/v2/bulk/workspaces/1006245000000010001/exportjobs/', variables('jobID'))",
+								"type": "Expression"
+							},
+							"method": "GET",
+							"headers": {
+								"Authorization": {
+									"value": "@concat('Zoho-oauthtoken ', variables('access_token'))",
+									"type": "Expression"
+								},
+								"responseFormat": "json",
+								"ZANALYTICS-ORGID": "67471564",
+								"criteria": "\\\"SHP - Integração BI\\\".\\\"Data Coleta\\\"='02-03-2023'"
+							},
+							"body": {
+								"access_token": "1000.6FDGAEOMQ15CT978CCOU1V0GK3BLNG",
+								"api_domain": "https://www.zohoapis.com",
+								"token_type": "Bearer",
+								"expires_in": 3600
+							}
+						}
+					},
+					{
+						"name": "6_download_files",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Wait1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "@concat('https://analyticsapi.zoho.com/restapi/v2/bulk/workspaces/1006245000000010001/exportjobs/', variables('jobID'), '/data')",
+								"type": "Expression"
+							},
+							"method": "GET",
+							"headers": {
+								"Authorization": {
+									"value": "@concat('Zoho-oauthtoken ', variables('access_token'), '/data')",
+									"type": "Expression"
+								},
+								"responseFormat": "json",
+								"ZANALYTICS-ORGID": "67471564",
+								"criteria": "\\\"SHP - Integração BI\\\".\\\"Data Coleta\\\"='02-03-2023'"
+							},
+							"body": {
+								"access_token": "1000.6FDGAEOMQ15CT978CCOU1V0GK3BLNG",
+								"api_domain": "https://www.zohoapis.com",
+								"token_type": "Bearer",
+								"expires_in": 3600
+							},
+							"datasets": [
+								{
+									"referenceName": "ds_drjoe01",
+									"type": "DatasetReference",
+									"parameters": {}
+								}
+							]
+						}
+					},
+					{
+						"name": "Wait1",
+						"type": "Wait",
+						"dependsOn": [
+							{
+								"activity": "5_create_download_url",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 120
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"access_token": {
+						"type": "String"
+					},
+					"jobID": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Dev_Zilliant_Competitors"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-03-09T11:58:36Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ppl_ud_copydata_fromgit_todatalake')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data from http to datalake",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_ud_input_csvdata_git",
+								"type": "DatasetReference",
+								"parameters": {
+									"prelativegiturl": {
+										"value": "@pipeline().parameters.psourcerelativeurl",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_ud_git_csv",
+								"type": "DatasetReference",
+								"parameters": {
+									"pfilename": {
+										"value": "@pipeline().parameters.pfilename",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"psourcerelativeurl": {
+						"type": "string"
+					},
+					"pfilename": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-03-21T19:14:15Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ppl_ud_demo_lookup')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup for filename",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": false,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "ds_ud_listoffiles",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "ForEach filename",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup for filename",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Lookup for filename').output.value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "set relativeurl",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "relativeurl",
+										"value": {
+											"value": "@item().SourceRelativeURL",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set variable filename",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "set relativeurl",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "filename",
+										"value": {
+											"value": "@item().FileName",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Copy data from http to datalake",
+									"type": "Copy",
+									"dependsOn": [
+										{
+											"activity": "Set variable filename",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "HttpReadSettings",
+												"requestMethod": "GET"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "ds_ud_input_csvdata_git",
+											"type": "DatasetReference",
+											"parameters": {
+												"prelativegiturl": {
+													"value": "@variables('relativeurl')",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "ds_ud_git_csv",
+											"type": "DatasetReference",
+											"parameters": {
+												"pfilename": {
+													"value": "@variables('filename')",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"relativeurl": {
+						"type": "String"
+					},
+					"filename": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-03-21T19:45:49Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ppl_ud_full_load_template')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data full load",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_ud_dbdemosw01_tbluser",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_ud_dbdemosw02",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Udemy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-03-07T19:29:42Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ppl_ud_get_metadata')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Metadata Folder",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "ds_ud_raw",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"fieldList": [
+								"itemName",
+								"itemType",
+								"lastModified",
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "DelimitedTextReadSettings"
+							}
+						}
+					},
+					{
+						"name": "ForEach files",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Get Metadata Folder",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get Metadata Folder').output.childItems",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Get Metadata File",
+									"type": "GetMetadata",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataset": {
+											"referenceName": "ds_ud_files",
+											"type": "DatasetReference",
+											"parameters": {
+												"pFilename": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										},
+										"fieldList": [
+											"size",
+											"lastModified",
+											"structure",
+											"itemType"
+										],
+										"storeSettings": {
+											"type": "AzureBlobStorageReadSettings",
+											"recursive": true,
+											"enablePartitionDiscovery": false
+										},
+										"formatSettings": {
+											"type": "DelimitedTextReadSettings"
+										}
+									}
+								},
+								{
+									"name": "If Condition File Size",
+									"type": "IfCondition",
+									"dependsOn": [
+										{
+											"activity": "Get Metadata File",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@greater(activity('Get Metadata File').output.size,200)",
+											"type": "Expression"
+										},
+										"ifFalseActivities": [
+											{
+												"name": "Delete file",
+												"type": "Delete",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"dataset": {
+														"referenceName": "ds_ud_files",
+														"type": "DatasetReference",
+														"parameters": {
+															"pFilename": {
+																"value": "@item().name",
+																"type": "Expression"
+															}
+														}
+													},
+													"enableLogging": false,
+													"storeSettings": {
+														"type": "AzureBlobStorageReadSettings",
+														"recursive": true,
+														"enablePartitionDiscovery": false
+													}
+												}
+											}
+										],
+										"ifTrueActivities": [
+											{
+												"name": "Wait true",
+												"type": "Wait",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"waitTimeInSeconds": 2
+												}
+											}
+										]
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Udemy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-03-02T19:41:38Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ppl_ud_incremental_copy')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy new and changed files",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"modifiedDatetimeStart": {
+										"value": "@addDays(utcnow(),-2)",
+										"type": "Expression"
+									},
+									"modifiedDatetimeEnd": {
+										"value": "@utcnow()",
+										"type": "Expression"
+									},
+									"wildcardFileName": "*.csv",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_ud_source",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_ud_destination",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Udemy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-03-06T19:49:04Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ppl_ud_incremental_load')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get last modified Date",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "select [LastLoadDate] as LastLoadDate\nfrom tblControl",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "ds_ud_dbdemosw01_table_control",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Get max modified date",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "Select max([Last_m]) as Last_m\nfrom tbluser",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "ds_ud_dbdemosw01_tbluser",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Get last modified Date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Get max modified date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": {
+									"value": "select * from tbluser\nwhere Last_m <=\n'@{activity('Get max modified date').output.firstRow.Last_m}'\nand Last_m >\n'@{activity('Get last modified Date').output.firstRow.LastLoadDate}'\n\n",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_ud_dbdemosw01_tbluser",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_ud_dbdemosw02",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "update control table",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Copy data1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[SPUpdateLoadInfo]",
+							"storedProcedureParameters": {
+								"ModifiedDate": {
+									"value": {
+										"value": "@{activity('Get max modified date').output.firstRow.Last_m}",
+										"type": "Expression"
+									},
+									"type": "DateTime"
+								},
+								"TableName": {
+									"value": "tbluser",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "ls_ud_dbdemosw01",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Udemy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-03-09T12:57:59Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/until example')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Until file exist",
+				"activities": [
+					{
+						"name": "Until file exist",
+						"type": "Until",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@variables('fileexist')",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Get Metadata country",
+									"type": "GetMetadata",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataset": {
+											"referenceName": "DelimitedText1",
+											"type": "DatasetReference",
+											"parameters": {}
+										},
+										"fieldList": [
+											"exists"
+										],
+										"storeSettings": {
+											"type": "AzureBlobStorageReadSettings",
+											"recursive": true,
+											"enablePartitionDiscovery": false
+										},
+										"formatSettings": {
+											"type": "DelimitedTextReadSettings"
+										}
+									}
+								},
+								{
+									"name": "If Condition file exist",
+									"type": "IfCondition",
+									"dependsOn": [
+										{
+											"activity": "Get Metadata country",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@activity('Get Metadata country').output.exists",
+											"type": "Expression"
+										},
+										"ifFalseActivities": [
+											{
+												"name": "Wait 30 seconds",
+												"type": "Wait",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"waitTimeInSeconds": 30
+												}
+											}
+										],
+										"ifTrueActivities": [
+											{
+												"name": "Set variable file exist",
+												"type": "SetVariable",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"variableName": "fileexist",
+													"value": true
+												}
+											}
+										]
+									}
+								}
+							],
+							"timeout": "0.12:00:00"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"fileexist": {
+						"type": "Boolean",
+						"defaultValue": false
+					}
+				},
+				"folder": {
+					"name": "Udemy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-11-30T19:26:58Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dbsup01",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "data_documento",
+						"type": "date"
+					},
+					{
+						"name": "data_venda",
+						"type": "date"
+					},
+					{
+						"name": "direcao_movimento",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "documento_estornado",
+						"type": "nvarchar"
+					},
+					{
+						"name": "moeda",
+						"type": "nvarchar"
+					},
+					{
+						"name": "nota_fiscal",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "numero_documento",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "preco_interno",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "quantidade_ordem",
+						"type": "nvarchar"
+					},
+					{
+						"name": "serie_fiscal",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "sku_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "tipo_documento",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "tipo_pessoa",
+						"type": "nvarchar"
+					},
+					{
+						"name": "valor_bruto",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "valor_liquido",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "venda_online",
+						"type": "nvarchar"
+					},
+					{
+						"name": "cnpj",
+						"type": "varchar"
+					},
+					{
+						"name": "ean_principal",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "sup01",
+					"table": "movimento"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Azure_sup01_filiais')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dbsup01",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "codigo",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "cnpj",
+						"type": "varchar"
+					},
+					{
+						"name": "bairro",
+						"type": "varchar"
+					},
+					{
+						"name": "cep",
+						"type": "varchar"
+					},
+					{
+						"name": "cidade",
+						"type": "varchar"
+					},
+					{
+						"name": "complemento",
+						"type": "varchar"
+					},
+					{
+						"name": "domicilio_fiscal",
+						"type": "varchar"
+					},
+					{
+						"name": "logradouro",
+						"type": "varchar"
+					},
+					{
+						"name": "numero",
+						"type": "varchar"
+					},
+					{
+						"name": "razao_social",
+						"type": "varchar"
+					},
+					{
+						"name": "uf",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "sup01",
+					"table": "filiais"
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
